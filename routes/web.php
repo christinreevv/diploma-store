@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\CategoryMatchController;
+use App\Http\Controllers\Admin\ColorMatchController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AuthController;
@@ -11,13 +13,14 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ColorController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\OrderController;
-use App\Http\Controllers\ProfileController;
 // ---------------------- публичные маршруты ----------------------
 
 // Главная
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SizeController;
 use Illuminate\Support\Facades\Route;
+
 
 Route::get('/', [HomeController::class, 'index']);
 
@@ -126,4 +129,23 @@ Route::prefix('admin')
         Route::patch('/products/{product}/toggle-status', [ProductController::class, 'toggleStatus'])
             ->name('products.toggle-status');
 
+        Route::get(
+            '/category-matches',
+            [CategoryMatchController::class, 'index']
+        )->name('category-matches.index');
+
+        Route::post(
+            '/category-matches/{category}',
+            [CategoryMatchController::class, 'update']
+        )->name('category-matches.update');
+
+        Route::get(
+            '/admin/color-matches',
+            [ColorMatchController::class, 'index']
+        )->name('admin.color-matches.index');
+
+          Route::post(
+            '/color-matches/{color}',
+            [ColorMatchController::class, 'update']
+        )->name('color-matches.update');
     });

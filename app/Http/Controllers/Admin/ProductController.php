@@ -150,31 +150,31 @@ class ProductController extends Controller
     // EDIT
     // =========================================================
 
-public function edit(Product $product)
-{
-    $product->load([
-        'productColors.color',
-        'productColors.images',
-        'sizes',
-        'images'
-    ]);
+    public function edit(Product $product)
+    {
+        $product->load([
+            'productColors.color',
+            'productColors.images',
+            'sizes',
+            'images',
+        ]);
 
-    $categories = Category::all();
-    $sizes = Size::all();
-    $colors = Color::all();
+        $categories = Category::all();
+        $sizes = Size::all();
+        $colors = Color::all();
 
-    $price = $product->sizes->first()?->pivot->price ?? 0;
-    $stock = $product->sizes->first()?->pivot->stock ?? 0;
+        $price = $product->sizes->first()?->pivot->price ?? 0;
+        $stock = $product->sizes->first()?->pivot->stock ?? 0;
 
-    return view('admin.products.edit', compact(
-        'product',
-        'categories',
-        'sizes',
-        'colors',
-        'price',
-        'stock'
-    ));
-}
+        return view('admin.products.edit', compact(
+            'product',
+            'categories',
+            'sizes',
+            'colors',
+            'price',
+            'stock'
+        ));
+    }
 
     public function update(Request $request, Product $product)
     {
@@ -296,21 +296,45 @@ public function edit(Product $product)
 
     public function show($slug)
     {
-        $product = Product::with(['sizes', 'productColors.color', 'images'])->where('slug', $slug)->firstOrFail();
+        $product = Product::with([
+            'sizes',
+            'productColors.color',
+            'productColors.images',
+            'images',
+            'category.matches',
+        ])->where('slug', $slug)->firstOrFail();
 
-        // Определяем дефолтное изображение
+        // Дефолтное изображение
         $defaultImage = $product->images->where('is_main', true)->first();
+
         if (! $defaultImage && $product->images->count()) {
             $defaultImage = $product->images->first();
         }
+
+        // категории для блока "Покупают вместе"
+        $matchedCategoryIds = $product->category
+            ?->matches
+            ->pluck('id')
+            ->toArray() ?? [];
+
+        $recommendedProducts = Product::with([
+            'sizes',
+            'productColors.images',
+            'productColors.color',
+        ])
+            ->whereIn('category_id', $matchedCategoryIds)
+            ->where('id', '!=', $product->id)
+            ->inRandomOrder()
+            ->take(12)
+            ->get();
 
         return view('products.show', [
             'product' => $product,
             'defaultImage' => $defaultImage ? $defaultImage->path : null,
             'selectedColorKey' => $product->productColors->first()?->color->key ?? null,
+            'recommendedProducts' => $recommendedProducts,
         ]);
     }
-
     // =========================================================
     // DELETE
     // =========================================================
@@ -348,7 +372,7 @@ public function edit(Product $product)
 
     public function toggle(Color $color)
     {
-         $color->update([
+        $color->update([
             'is_active' => ! $color->is_active,
         ]);
 

@@ -2,9 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\Product;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Category extends Model
 {
@@ -13,13 +11,22 @@ class Category extends Model
         'slug',
     ];
 
-  // App\Models\Size.php
+    // App\Models\Size.php
 
-public function products()
-{
-    return $this->belongsToMany(Product::class, 'product_sizes')
-        ->withPivot(['price', 'stock'])
-        ->withTimestamps();
-}
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'product_sizes')
+            ->withPivot(['price', 'stock'])
+            ->withTimestamps();
+    }
 
+    public function matches()
+    {
+        return $this->belongsToMany(
+            Category::class,
+            'category_matches',
+            'category_id',
+            'matched_category_id'
+        );
+    }
 }

@@ -43,6 +43,11 @@
                     Категории
                 </a>
 
+                <a href="{{ route('admin.category-matches.index') }}"
+                    class="px-4 py-2 rounded-sm bg-white border text-gray-800 text-sm hover:bg-gray-50 transition">
+                    Матчинг категорий
+                </a>
+
                 <a href="{{ route('admin.sizes.index') }}"
                     class="px-4 py-2 rounded-sm bg-white border text-gray-800 text-sm hover:bg-gray-50 transition">
                     Размеры

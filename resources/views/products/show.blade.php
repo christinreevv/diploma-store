@@ -242,6 +242,71 @@
 
             </div>
         </div>
+
+
+        @if ($recommendedProducts->count())
+
+            <div class="">
+
+                <div class="mb-8">
+                    <span class="uppercase tracking-[0.25em] text-sm text-gray-500">
+                        Complete the look
+                    </span>
+
+                    <h2 class="text-4xl font-light mt-2">
+                        Покупают вместе
+                    </h2>
+                </div>
+
+                <div class="flex gap-6 overflow-x-auto pb-4">
+
+                    @foreach ($recommendedProducts as $item)
+                        @php
+                            $color = $item->productColors->first();
+
+                            $images = $color?->images ?? collect();
+
+                            $image = $images->where('is_main', true)->first() ?? $images->first();
+
+                            $imageUrl = $image ? Storage::url($image->path) : asset('images/placeholder.jpg');
+
+                            $price = $item->sizes->first()?->pivot->price ?? 0;
+
+                            $productUrl = route('products.show', [
+                                'product' => $item->slug,
+                            ]);
+                        @endphp
+
+                        <a href="{{ $productUrl }}" class="shrink-0 w-72">
+
+                            <div class="aspect-[3/4] overflow-hidden rounded-sm bg-gray-100">
+
+                                <img src="{{ $imageUrl }}" alt="{{ $item->title }}"
+                                    class="w-full h-full object-cover transition duration-500 hover:scale-105">
+
+                            </div>
+
+                            <div class="mt-3">
+
+                                <h3 class="text-lg font-medium truncate">
+                                    {{ $item->title }}
+                                </h3>
+
+                                <p class="mt-1 text-gray-700">
+                                    {{ number_format($price, 0, ',', ' ') }} ₽
+                                </p>
+
+                            </div>
+
+                        </a>
+                    @endforeach
+
+                </div>
+
+            </div>
+
+        @endif
+
     </div>
     <style>
         @keyframes shake {
