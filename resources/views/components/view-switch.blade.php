@@ -1,7 +1,7 @@
 <div class="flex items-center justify-between mb-8">
 
     <div class="text-sm pe-3 text-gray-500">
-      
+
     </div>
 
     <div class="flex gap-2">
@@ -18,7 +18,7 @@
 
         {{-- 3x3 --}}
         <button onclick="setView(3)"
-            class="p-2 border hover:bg-black hover:text-white transition">
+            class="p-2 border hover:bg-black hover:text-white transition hidden lg:flex">
 
             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none">
                 <path d="M4 4H10V10H4V4Z" stroke="currentColor" />

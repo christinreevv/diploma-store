@@ -5,7 +5,7 @@
 <main>
     {{-- Продукты --}}
     @if ($products->count())
-        <div data-products-grid class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+    <div data-products-grid class="grid grid-cols-2 lg:grid-cols-5 gap-4 lg:gap-6">
             @foreach ($products as $product)
                 @php
                     $colorVariants = $product->productColors ?? collect();
@@ -41,7 +41,7 @@
                             auth()->user()->favorites()->where('product_color_id', $color->id)->exists();
                     @endphp
 
-                    <div class="relative min-h-[28rem] flex flex-col">
+                  <div class="relative flex flex-col">
 
                         {{-- Hover только на изображении --}}
                         <a href="{{ $productUrl }}"
@@ -55,14 +55,14 @@
                         </a>
 
                         {{-- Информация --}}
-                        <div class="pt-3 flex items-start justify-between gap-2">
+              <div class="pt-3 flex items-start justify-between gap-3">
 
                             <div class="flex flex-col text-left">
-                                <h5 class="text-lg font-medium text-gray-800 truncate">
+             <h5 class="text-sm lg:text-lg font-medium text-gray-800 leading-tight">
                                     {{ $product->title }}
                                 </h5>
 
-                                <p class="text-gray-700 font-semibold mt-1">
+                               <p class="text-gray-700 font-semibold mt-1 text-sm lg:text-base">
                                     {{ number_format($price, 0, ',', ' ') }} ₽
                                 </p>
                             </div>
@@ -71,10 +71,14 @@
                             <form method="POST" action="{{ route('favorites.toggle', $color->id) }}">
                                 @csrf
 
-                                <button type="submit" onclick="event.stopPropagation()"
-                                    class="favorite-btn shrink-0 {{ $inFavorite ? 'active' : '' }}">
-                                    <img src="{{ $inFavorite ? asset('favorite1.svg') : asset('favorite.png') }}"
-                                        class="w-6 h-6 favorite-img pointer-events-none" alt="favorite">
+                              <button
+    type="submit"
+    onclick="event.stopPropagation()"
+    class="favorite-btn flex-shrink-0 w-8 h-8 flex items-center justify-center {{ $inFavorite ? 'active' : '' }}">
+                                  <img
+    src="{{ $inFavorite ? asset('favorite1.svg') : asset('favorite.png') }}"
+    class="w-5 h-5 lg:w-6 lg:h-6 favorite-img pointer-events-none"
+    alt="favorite">
                                 </button>
                             </form>
                         </div>
