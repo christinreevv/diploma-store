@@ -5,12 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Product;
+use App\Models\ProductSize;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
-    // 🛒 Показываем корзину
+    // -------------------------------------------- отображение корзины --------------------------------------------
     public function index()
     {
         $user = Auth::user();
@@ -23,83 +24,76 @@ class CartController extends Controller
             'items.productColor.color',
             'items.productColor.images',
             'items.productSize.size',
-        ])->where('user_id', auth()->id())->first();
+        ])->firstOrCreate([
+            'user_id' => auth()->id(),
+        ]);
 
-        // Общая сумма корзины
         $total = $cart->items->sum(fn ($item) => ($item->price ?? 0) * $item->quantity
         );
 
         return view('cart.index', compact('cart', 'total'));
     }
 
-    public function add(Request $request, $slug)
-    {
-        if (! Auth::check()) {
-            return response()->json([
-                'success' => false,
-            ], 401);
-        }
+    // -------------------------------------------- добавление в корзину --------------------------------------------
 
-        $request->validate([
-            'color' => 'required',
-            'size_id' => 'required',
-            'quantity' => 'required|integer|min:1',
-        ]);
+public function add(Request $request, $slug)
+{
+    if (!Auth::check()) {
+        return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+    }
 
-        $product = Product::where('slug', $slug)
-            ->with(['productColors.color', 'sizes'])
-            ->firstOrFail();
+    $request->validate([
+        'color' => 'required',
+        'size_id' => 'required|exists:sizes,id',
+    ]);
 
-$productColor = $product->productColors()
-    ->whereHas('color', function ($q) use ($request) {
-        $q->where('code', $request->color);
-    })
-    ->first();
+    $product = Product::where('slug', $slug)
+        ->with(['productColors.color', 'sizes'])
+        ->firstOrFail();
 
-        $productSize = \App\Models\ProductSize::where('product_id', $product->id)
-            ->where('size_id', $request->size_id)
-            ->first();
-        if (! $productColor || ! $productSize) {
-            return response()->json([
-                'success' => false,
-            ], 422);
-        }
+    $productColor = $product->productColors()
+        ->where('color_id', $request->color)
+        ->first();
 
-        $cart = Auth::user()->cart()->first();
+    $productSize = ProductSize::where('product_id', $product->id)
+        ->where('size_id', $request->size_id)
+        ->firstOrFail();
 
-        if (! $cart) {
-            $cart = Auth::user()->cart()->create();
-        }
+    if (!$productColor || !$productSize) {
+        return response()->json(['success' => false, 'message' => 'Invalid data'], 422);
+    }
 
-        $item = $cart->items()
-            ->where('product_id', $product->id)
-            ->where('product_color_id', $productColor->id)
-            ->where('product_size_id', $productSize->id)
-            ->first();
+    $cart = Cart::firstOrCreate([
+        'user_id' => Auth::id(),
+    ]);
 
-        if ($item) {
+    $item = $cart->items()
+        ->where('product_id', $product->id)
+        ->where('product_color_id', $productColor->id)
+        ->where('product_size_id', $productSize->id)
+        ->first();
 
-            $item->update([
-                'quantity' => $request->quantity,
-            ]);
-
-        } else {
-
-            $cart->items()->create([
-                'product_id' => $product->id,
-                'product_color_id' => $productColor->id,
-                'product_size_id' => $productSize->id,
-                'price' => $productSize->price ?? 0,
-                'quantity' => $request->quantity,
-            ]);
-        }
-
-        return response()->json([
-            'success' => true,
+    if ($item) {
+        $item->increment('quantity', 1);
+    } else {
+        $item = $cart->items()->create([
+            'product_id' => $product->id,
+            'product_color_id' => $productColor->id,
+            'product_size_id' => $productSize->id,
+            'price' => $productSize->price,
+            'quantity' => 1,
         ]);
     }
 
-    // 🔄 Обновление количества товара
+    return response()->json([
+        'success' => true,
+        'message' => 'Товар добавлен в корзину',
+        'quantity' => $item->quantity,
+    ]);
+}
+
+    // -------------------------------------------- обновление корзины --------------------------------------------
+
     public function update(Request $request, $itemId)
     {
         $request->validate([
@@ -118,7 +112,8 @@ $productColor = $product->productColors()
         return back()->with('success', 'Количество обновлено');
     }
 
-    // ❌ Удаление товара из корзины
+    // -------------------------------------------- удаление корзины --------------------------------------------
+
     public function remove($itemId)
     {
         $item = CartItem::whereHas('cart', function ($q) {

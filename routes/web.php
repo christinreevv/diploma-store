@@ -21,14 +21,13 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SizeController;
 use Illuminate\Support\Facades\Route;
 
-
 Route::get('/', [HomeController::class, 'index']);
 
 // Каталог
 Route::get('/catalog', [CatalogController::class, 'index'])->name('catalog.index');
 
-// Просмотр конкретного продукта
-Route::get('/products/{product:slug}', [ProductController::class, 'show'])->name('products.show');
+Route::get('/products/{slug}/{color?}', [ProductController::class, 'show'])
+    ->name('products.show');
 
 // Авторизация и регистрация
 Route::get('/login', [AuthController::class, 'authorization'])->name('login');
@@ -58,6 +57,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/cart/update/{item}', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/remove/{item}', [CartController::class, 'remove'])->name('cart.remove');
     Route::delete('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
+    Route::get('/cart/check/{slug}', [CartController::class, 'check']);
 
     // Профиль
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
@@ -144,7 +144,7 @@ Route::prefix('admin')
             [ColorMatchController::class, 'index']
         )->name('admin.color-matches.index');
 
-          Route::post(
+        Route::post(
             '/color-matches/{color}',
             [ColorMatchController::class, 'update']
         )->name('color-matches.update');

@@ -3,45 +3,81 @@
 @endphp
 
 <main>
+<<<<<<< HEAD
+=======
+
+    @php
+        $categorySlug = $product->category?->slug ?? '';
+
+        $imageClass = 'object-cover';
+
+        if ($categorySlug === 'shoes') {
+            // ремни
+            $imageClass = 'object-contain scale-75';
+        } elseif ($categorySlug === 'jeans') {
+            $imageClass = 'object-contain scale-90';
+        }
+    @endphp
+
+>>>>>>> ca1285c (photo-gallery)
     {{-- Продукты --}}
     @if ($products->count())
-    <div data-products-grid class="grid grid-cols-2 lg:grid-cols-5 gap-4 lg:gap-6">
+        <div data-products-grid class="grid grid-cols-2 lg:grid-cols-5 gap-4 lg:gap-6">
             @foreach ($products as $product)
                 @php
-                    $colorVariants = $product->productColors ?? collect();
+                    $colorVariants = $product->productColors;
 
-                    // фильтр по выбранным цветам
                     if (!empty($selectedColors)) {
-                        $colorVariants = $colorVariants->filter(fn($c) => in_array($c->color->code, $selectedColors));
+                        $colorVariants = $colorVariants->filter(function ($c) use ($selectedColors) {
+                            return in_array($c->color->code, $selectedColors);
+                        });
                     }
 
-                    // ❗ ВАЖНО: убираем цвета без изображений
-                    $colorVariants = $colorVariants->filter(function ($c) {
-                        return $c->images && $c->images->count() > 0;
-                    });
+                    $colorVariants = $colorVariants->filter(fn($c) => $c->images->isNotEmpty());
 
-                    // если после фильтра ничего не осталось — пропускаем товар
                     if ($colorVariants->isEmpty()) {
                         continue;
                     }
+
+                    // ВАЖНО: берем ТОЛЬКО первый совпавший цвет
+                    $color = $colorVariants->first();
+
+                    $images = $color->images ?? collect();
+                    $image = $images->where('is_main', true)->first() ?? $images->first();
+                    $imageUrl = $image ? Storage::url($image->path) : asset('images/placeholder.jpg');
+
+                    $price = $product->sizes->first()?->pivot->price ?? 0;
+
+                    $productUrl = route('products.show', [
+                        'slug' => $product->slug,
+                        'color' => $color->color->slug,
+                    ]);
                 @endphp
 
                 @foreach ($colorVariants as $color)
                     @php
                         $images = $color?->images ?? collect();
-                        $image = $images->where('is_main', true)->first() ?? $images->first();
+                        $image = $images->where('is_main', true)->first();
+
+                        if (!$image) {
+                            $image = $images->first();
+                        }
                         $imageUrl = $image ? Storage::url($image->path) : asset('images/placeholder.jpg');
                         $price = $product->sizes->first()?->pivot->price ?? 0;
                         $productUrl = route('products.show', [
-                            'product' => $product->slug,
-                            'color' => $color?->key ?? 'default',
+                            'slug' => $product->slug,
+                            'color' => Str::slug($color?->color?->title),
                         ]);
                         $inFavorite =
                             auth()->check() &&
                             auth()->user()->favorites()->where('product_color_id', $color->id)->exists();
                     @endphp
 
+<<<<<<< HEAD
                   <div class="relative flex flex-col">
+=======
+                    <div class="relative flex flex-col">
+>>>>>>> ca1285c (photo-gallery)
 
                         {{-- Hover только на изображении --}}
                         <a href="{{ $productUrl }}"
@@ -55,14 +91,14 @@
                         </a>
 
                         {{-- Информация --}}
-              <div class="pt-3 flex items-start justify-between gap-3">
+                        <div class="pt-3 flex items-start justify-between gap-3">
 
                             <div class="flex flex-col text-left">
-             <h5 class="text-sm lg:text-lg font-medium text-gray-800 leading-tight">
+                                <h5 class="text-sm lg:text-lg font-medium text-gray-800 leading-tight">
                                     {{ $product->title }}
                                 </h5>
 
-                               <p class="text-gray-700 font-semibold mt-1 text-sm lg:text-base">
+                                <p class="text-gray-700 font-semibold mt-1 text-sm lg:text-base">
                                     {{ number_format($price, 0, ',', ' ') }} ₽
                                 </p>
                             </div>
@@ -71,14 +107,10 @@
                             <form method="POST" action="{{ route('favorites.toggle', $color->id) }}">
                                 @csrf
 
-                              <button
-    type="submit"
-    onclick="event.stopPropagation()"
-    class="favorite-btn flex-shrink-0 w-8 h-8 flex items-center justify-center {{ $inFavorite ? 'active' : '' }}">
-                                  <img
-    src="{{ $inFavorite ? asset('favorite1.svg') : asset('favorite.png') }}"
-    class="w-5 h-5 lg:w-6 lg:h-6 favorite-img pointer-events-none"
-    alt="favorite">
+                                <button type="submit" onclick="event.stopPropagation()"
+                                    class="favorite-btn flex-shrink-0 w-8 h-8 flex items-center justify-center {{ $inFavorite ? 'active' : '' }}">
+                                    <img src="{{ $inFavorite ? asset('favorite1.svg') : asset('favorite.png') }}"
+                                        class="w-5 h-5 lg:w-6 lg:h-6 favorite-img pointer-events-none" alt="favorite">
                                 </button>
                             </form>
                         </div>

@@ -18,14 +18,12 @@
         $imagesByColor = [];
         $generalImages = [];
 
-        // Формируем массив изображений по цветам
         foreach ($product->productColors as $productColor) {
-            $colorKey = $productColor->color->code; // <-- заменили key на code
-            $colorImages = $productColor->images->map(fn($img) => Storage::url($img->path))->toArray();
-            $imagesByColor[$colorKey] = $colorImages;
+            $colorId = $productColor->color->id;
+
+            $imagesByColor[$colorId] = $productColor->images->map(fn($img) => Storage::url($img->path))->toArray();
         }
 
-        // Общие изображения продукта
         foreach ($product->images as $img) {
             $generalImages[] = Storage::url($img->path);
         }
@@ -39,18 +37,22 @@
             )
             ->toArray();
 
-        $selectedColorKey = $product->productColors->first()?->color->code ?? null;
-
-        // Начальное изображение
-        $initialImage =
+        $selectedColorKey = $selectedColor?->color?->id;
+        $initialImages =
             $selectedColorKey && isset($imagesByColor[$selectedColorKey])
-                ? $imagesByColor[$selectedColorKey][0]
-                : $generalImages[0] ?? asset('images/placeholder.jpg');
+                ? $imagesByColor[$selectedColorKey]
+                : $generalImages;
 
+        $hasMultipleImages = count($initialImages) > 1;
+
+        $initialImage = $initialImages[0] ?? asset('images/placeholder.jpg');
     @endphp
-    @php
-        $selectedColor = $product->productColors->first();
 
+    @php
+        $hasMultipleImages = isset($imagesByColor[$selectedColorKey]) && count($imagesByColor[$selectedColorKey]) > 1;
+    @endphp
+
+    @php
         $inFavorite =
             auth()->check() &&
             $selectedColor &&
@@ -61,25 +63,27 @@
         <div class="container mx-auto px-4 py-10 flex-1 grid grid-cols-1 md:grid-cols-2 gap-12">
 
             {{-- Галерея --}}
-            <div id="imageWrapper"
-                class="relative flex items-center justify-center rounded-lg p-4 bg-gray-50 overflow-hidden">
+            {{-- Галерея --}}
+            <div id="imageWrapper" class="relative rounded-lg bg-gray-50 overflow-hidden h-[80vh] flex">
 
-                <button id="prevImage" class="absolute left-3 z-10 hover:bg-gray-200 p-2 rounded-md transition">
-                    <i class="fa-solid fa-chevron-left"></i>
+                {{-- Кнопка влево --}}
+                <button id="prevImage"
+                    class="absolute left-2 top-1/2 -translate-y-1/2 z-10
+               p-2 rounded-md transition
+               {{ $hasMultipleImages ? '' : 'hidden' }}">
+                    ‹
                 </button>
 
+                {{-- Картинка --}}
                 <img id="productImage" src="{{ $initialImage }}"
-                    class="object-contain w-full max-h-[80vh] transition-all duration-300">
+                    class="w-full h-full object-contain transition-all duration-300">
 
-                <!-- ZOOM BOX -->
-                <div id="zoomBox"
-                    class="absolute w-44 h-44 border shadow-xl rounded-lg overflow-hidden bg-white pointer-events-none
-            opacity-0 scale-90 transition-all duration-150">
-                    <img id="zoomImage" class="absolute w-full h-full object-cover will-change-transform" />
-                </div>
-
-                <button id="nextImage" class="absolute right-3 z-10 hover:bg-gray-200 p-2 rounded-md transition">
-                    <i class="fa-solid fa-chevron-right"></i>
+                {{-- Кнопка вправо --}}
+                <button id="nextImage"
+                    class="absolute right-2 top-1/2 -translate-y-1/2 z-10
+               p-2 rounded-md transition
+               {{ $hasMultipleImages ? '' : 'hidden' }}">
+                    ›
                 </button>
 
             </div>
@@ -131,7 +135,7 @@
                                 @endphp
 
                                 <div class="flex items-center gap-2 color-option {{ !$hasImages ? 'opacity-30 cursor-not-allowed pointer-events-none' : 'cursor-pointer' }}"
-                                    data-color="{{ $color->code }}">
+                                    data-color="{{ $productColor->color->id }}">
                                     <div class="w-6 h-6 rounded-full border border-gray-300"
                                         style="background-color: {{ $color->code }}"></div>
 
@@ -200,53 +204,48 @@
                     {{-- CART --}}
                     <div class="flex-1">
 
-                        <form id="cartForm">
-                            @csrf
+                        <div class="mt-6 flex items-center gap-3">
 
-                            <input type="hidden" name="color" id="selectedColor" value="{{ $selectedColorKey }}">
-                            <input type="hidden" name="size_id" id="sizeInput">
-                            <input type="hidden" name="quantity" id="quantityInput" value="1">
+                            {{-- CART --}}
+                            <form action="{{ route('cart.add', $product->slug) }}" id="cartForm" method="POST"
+                                class="flex-1">
+                                @csrf
 
-                            <div class="flex gap-2">
-
-                                <button type="button" id="minusBtn" class="w-10 h-10 border rounded-md hidden">
-                                    -
-                                </button>
+                                <input type="hidden" name="color" id="selectedColor" value="{{ $selectedColorKey }}">
+                                <input type="hidden" name="size_id" id="sizeInput">
 
                                 <button type="submit" id="cartBtn"
-                                    class="flex-1 bg-black text-white rounded-sm h-16 text-sm hover:bg-gray-900 transition">
-                                    Добавить в корзину
-                                </button>
+                                    class="w-full h-16 text-sm transition flex items-center justify-center
+    {{ $inCart ? 'bg-white text-black border border-black' : 'bg-black text-white' }}">
 
-                                <button type="button" id="plusBtn" class="w-10 h-10 border rounded-md hidden">
-                                    +
-                                </button>
+                                    <span id="cartText">
+                                        {{ $inCart ? 'В корзине' : 'Добавить в корзину' }}
+                                    </span>
 
-                            </div>
-                        </form>
+                                </button>
+                            </form>
+                            {{-- FAVORITE --}}
+                            <form method="POST" action="{{ route('favorites.toggle', $selectedColor->id) }}">
+                                @csrf
+
+                                <button type="submit"
+                                    class="w-16 h-16 flex items-center justify-center border border-gray-300 rounded-md hover:border-black transition">
+
+                                    <img src="{{ $inFavorite ? asset('favorite1.svg') : asset('favorite.png') }}"
+                                        class="w-5 h-5" alt="favorite">
+
+                                </button>
+                            </form>
+
+                        </div>
+
+
 
                     </div>
-
-                    {{-- FAVORITE --}}
-                    <form method="POST" action="{{ route('favorites.toggle', $selectedColor->id) }}">
-                        @csrf
-
-                        <button type="submit" onclick="event.stopPropagation()"
-                            class="w-16 h-16 flex items-center justify-center border border-gray-300 rounded-md hover:border-black transition">
-
-                            <img src="{{ $inFavorite ? asset('favorite1.svg') : asset('favorite.png') }}" class="w-5 h-5"
-                                alt="favorite">
-                        </button>
-                    </form>
                 </div>
-
             </div>
-        </div>
 
-
-        @if ($recommendedProducts->count())
-
-            <div class="">
+            <div id="recommendedBlock" class="opacity-0 max-h-0 overflow-hidden transition-all duration-700 ease-in-out">
 
                 <div class="mb-8">
                     <span class="uppercase tracking-[0.25em] text-sm text-gray-500">
@@ -256,6 +255,8 @@
                     <h2 class="text-4xl font-light mt-2">
                         Покупают вместе
                     </h2>
+
+
                 </div>
 
                 <div class="flex gap-6 overflow-x-auto pb-4">
@@ -263,7 +264,6 @@
                     @foreach ($recommendedProducts as $item)
                         @php
                             $color = $item->productColors->first();
-
                             $images = $color?->images ?? collect();
 
                             $image = $images->where('is_main', true)->first() ?? $images->first();
@@ -273,21 +273,18 @@
                             $price = $item->sizes->first()?->pivot->price ?? 0;
 
                             $productUrl = route('products.show', [
-                                'product' => $item->slug,
+                                'slug' => $item->slug, // ✅ ВОТ ТУТ ИСПРАВЛЕНИЕ
+                                'color' => Str::slug($color?->color?->title),
                             ]);
                         @endphp
 
                         <a href="{{ $productUrl }}" class="shrink-0 w-72">
-
                             <div class="aspect-[3/4] overflow-hidden rounded-sm bg-gray-100">
-
-                                <img src="{{ $imageUrl }}" alt="{{ $item->title }}"
+                                <img src="{{ $imageUrl }}"
                                     class="w-full h-full object-cover transition duration-500 hover:scale-105">
-
                             </div>
 
                             <div class="mt-3">
-
                                 <h3 class="text-lg font-medium truncate">
                                     {{ $item->title }}
                                 </h3>
@@ -295,9 +292,7 @@
                                 <p class="mt-1 text-gray-700">
                                     {{ number_format($price, 0, ',', ' ') }} ₽
                                 </p>
-
                             </div>
-
                         </a>
                     @endforeach
 
@@ -305,7 +300,7 @@
 
             </div>
 
-        @endif
+        </div>
 
     </div>
     <style>
@@ -327,307 +322,168 @@
     </style>
 
     <div id="toast"
-        class="fixed bottom-5 left-1/2 -translate-x-1/2 bg-black text-white px-4 py-2 rounded-lg shadow-lg opacity-0 pointer-events-none transition-all duration-300">
-        Фото для этого цвета отсутствует
+        class="fixed bottom-5 left-1/2 -translate-x-1/2
+    bg-black text-white px-4 py-2 rounded-lg shadow-lg
+    opacity-0 translate-y-2 pointer-events-none
+    transition-all duration-300">
     </div>
 
     <script>
         const imagesByColor = @json($imagesByColor);
 
-        function showToast(message) {
+        let toastTimeout;
+
+        function showToast(message, duration = 2000) {
             const toast = document.getElementById('toast');
 
             toast.textContent = message;
             toast.classList.remove('opacity-0', 'translate-y-2');
-
             toast.classList.add('opacity-100');
 
-            setTimeout(() => {
-                toast.classList.add('opacity-0');
-            }, 2000);
-        }
-    </script>
+            clearTimeout(toastTimeout);
 
-    <script>
+            toastTimeout = setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                toast.classList.remove('opacity-100');
+            }, duration);
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
 
+            // ================= CART =================
             const form = document.getElementById('cartForm');
+            const btn = document.getElementById('cartBtn');
+            const text = document.getElementById('cartText');
 
-            const nextImage = document.getElementById('nextImage');
-            const prevImage = document.getElementById('prevImage');
+            function setAddedState() {
+                btn.classList.remove('bg-black', 'text-white');
+                btn.classList.add('bg-white', 'text-black', 'border', 'border-black');
+                text.textContent = 'В корзине';
+            }
 
-            const sizeButtons = document.querySelectorAll('.size-option');
-            const colorButtons = document.querySelectorAll('.color-option');
+            function showRecommended() {
+                const block = document.getElementById('recommendedBlock');
+                if (!block) return;
 
-            const sizeInput = document.getElementById('sizeInput');
-            const colorInput = document.getElementById('selectedColor');
-            const quantityInput = document.getElementById('quantityInput');
-
-            const cartBtn = document.getElementById('cartBtn');
-            const plusBtn = document.getElementById('plusBtn');
-            const minusBtn = document.getElementById('minusBtn');
-
-            const productImage = document.getElementById('productImage');
-
-            let currentColor = colorInput.value;
-            let currentImages = imagesByColor[currentColor] || [];
-            let currentImageIndex = 0;
-
-            let quantity = 1;
-
-            // ------------------------------ size ------------------------------
-
-            sizeButtons.forEach(btn => {
-
-                btn.addEventListener('click', () => {
-
-                    sizeButtons.forEach(b => {
-                        b.classList.remove(
-                            'bg-black',
-                            'text-white',
-                            'border-black',
-                            'border-red-500',
-                            'ring-2',
-                            'ring-red-300',
-                            'animate-[shake_0.35s_ease-in-out]'
-                        );
-                    });
-
-                    btn.classList.add(
-                        'bg-black',
-                        'text-white',
-                        'border-black'
-                    );
-
-                    sizeInput.value = btn.dataset.id;
+                block.classList.remove('hidden');
+                requestAnimationFrame(() => {
+                    block.classList.remove('opacity-0', 'max-h-0');
+                    block.classList.add('opacity-100');
                 });
-            });
+            }
 
-            // ------------------------------ color ------------------------------
-            colorButtons.forEach(btn => {
-
-                btn.addEventListener('click', () => {
-
-                    // ❗ если цвет уже выбран — ничего не делаем
-                    if (colorInput.value === btn.dataset.color) return;
-
-                    // если цвет заблокирован — тоже ничего не делаем
-                    if (btn.classList.contains('pointer-events-none')) return;
-
-                    const selectedColor = btn.dataset.color;
-
-                    colorInput.value = selectedColor;
-
-                    currentColor = selectedColor;
-                    currentImages = imagesByColor[selectedColor] || [];
-                    currentImageIndex = 0;
-
-                    if (currentImages.length) {
-
-                        productImage.classList.add('opacity-0');
-
-                        setTimeout(() => {
-                            productImage.src = currentImages[0];
-                            productImage.classList.remove('opacity-0');
-                        }, 150);
-                    }
-                });
-
-            });
-
-            // NEXT IMAGE
-            nextImage.addEventListener('click', () => {
-
-                if (!currentImages.length) return;
-
-                currentImageIndex++;
-
-                if (currentImageIndex >= currentImages.length) {
-                    currentImageIndex = 0;
-                }
-
-                productImage.classList.add('opacity-0');
-
-                setTimeout(() => {
-                    productImage.src = currentImages[currentImageIndex];
-                    productImage.classList.remove('opacity-0');
-                }, 150);
-            });
-
-            // PREV IMAGE
-            prevImage.addEventListener('click', () => {
-
-                if (!currentImages.length) return;
-
-                currentImageIndex--;
-
-                if (currentImageIndex < 0) {
-                    currentImageIndex = currentImages.length - 1;
-                }
-
-                productImage.classList.add('opacity-0');
-
-                setTimeout(() => {
-                    productImage.src = currentImages[currentImageIndex];
-                    productImage.classList.remove('opacity-0');
-                }, 150);
-            });
-
-            form.addEventListener('submit', async (e) => {
+            form?.addEventListener('submit', async (e) => {
                 e.preventDefault();
 
-                if (!sizeInput.value) {
-                    sizeButtons.forEach(btn => {
-                        btn.classList.add(
-                            'border-red-500',
-                            'ring-2',
-                            'ring-red-300',
-                            'animate-[shake_0.35s_ease-in-out]'
-                        );
-                    });
+                const size = document.getElementById('sizeInput')?.value;
 
-                    return; 
+                if (!size) {
+                    showToast('Выберите размер');
+                    return;
                 }
 
-                const response = await fetch("{{ route('cart.add', $product->slug) }}", {
+                const res = await fetch(form.action, {
                     method: 'POST',
-                    credentials: 'same-origin', // 🔥 ВОТ ЭТО НЕ ХВАТАЕТ
                     headers: {
+                        'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
                             .content,
                         'Accept': 'application/json'
                     },
-                    body: new FormData(form)
+                    body: JSON.stringify({
+                        color: document.getElementById('selectedColor').value,
+                        size_id: size
+                    })
                 });
 
-                const data = await response.json();
+                const json = await res.json();
 
-                if (!data.success) {
-                    alert('Ошибка добавления в корзину');
-                    return;
-                }
-
-                // ✅ переключаем кнопку в режим "в корзине"
-                cartBtn.classList.remove('bg-black', 'text-white');
-                cartBtn.classList.add('bg-white', 'text-black', 'border');
-
-                cartBtn.innerHTML = `
-        <div class="flex items-center justify-center gap-3">
-            <button type="button" id="minusInline" class="w-8 h-8 border rounded">-</button>
-            <span class="text-sm">В корзине</span>
-            <button type="button" id="plusInline" class="w-8 h-8 border rounded">+</button>
-        </div>
-    `;
-
-                plusBtn.classList.add('hidden');
-                minusBtn.classList.add('hidden');
-
-                let qty = 1;
-
-                const minusInline = document.getElementById('minusInline');
-                const plusInline = document.getElementById('plusInline');
-
-                minusInline.addEventListener('click', async (e) => {
-                    e.stopPropagation();
-
-                    if (qty <= 1) return;
-
-                    qty--;
-                    quantityInput.value = qty;
-
-                    await updateCart();
-                });
-
-                plusInline.addEventListener('click', async (e) => {
-                    e.stopPropagation();
-
-                    qty++;
-                    quantityInput.value = qty;
-
-                    await updateCart();
-                });
-
-                async function updateCart() {
-                    await fetch("{{ route('cart.add', $product->slug) }}", {
-                        method: 'POST',
-                        credentials: 'same-origin', // 🔥 ВОТ ЭТО НЕ ХВАТАЕТ
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector(
-                                'meta[name="csrf-token"]').content,
-                            'Accept': 'application/json'
-                        },
-                        body: new FormData(form)
-                    });
+                if (json.success) {
+                    setAddedState();
+                    showToast(json.message);
+                    setTimeout(showRecommended, 200);
+                } else {
+                    showToast(json.message || 'Ошибка');
                 }
             });
 
-            // PLUS
-            plusBtn.addEventListener('click', () => {
+            // ================= SIZE =================
+            document.querySelectorAll('.size-option').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const input = document.getElementById('sizeInput');
+                    if (!input) return;
 
-                quantity++;
+                    input.value = btn.dataset.id;
 
-                quantityInput.value = quantity;
-                cartBtn.textContent = quantity;
-
-                updateQuantity();
-            });
-
-            // MINUS
-            minusBtn.addEventListener('click', () => {
-
-                if (quantity <= 1) return;
-
-                quantity--;
-
-                quantityInput.value = quantity;
-                cartBtn.textContent = quantity;
-
-                updateQuantity();
-            });
-
-            async function updateQuantity() {
-
-                await fetch(
-                    "{{ route('cart.add', $product->slug) }}", {
-                        method: 'POST',
-                        credentials: 'same-origin', // 🔥 ВОТ ЭТО НЕ ХВАТАЕТ
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector(
-                                'meta[name="csrf-token"]'
-                            ).content,
-                            'Accept': 'application/json'
-                        },
-                        body: new FormData(form)
+                    document.querySelectorAll('.size-option').forEach(b => {
+                        b.classList.remove('bg-black', 'text-white');
                     });
+
+                    btn.classList.add('bg-black', 'text-white');
+                });
+            });
+
+            // ================= COLOR + IMAGE =================
+            const colorButtons = document.querySelectorAll('.color-option');
+            const colorInput = document.getElementById('selectedColor');
+
+            let currentColor = colorInput?.value;
+            let currentImages = imagesByColor[currentColor] || [];
+            let currentIndex = 0;
+
+            const img = document.getElementById('productImage');
+            const next = document.getElementById('nextImage');
+            const prev = document.getElementById('prevImage');
+
+            function updateImage(i) {
+                if (!currentImages.length) return;
+
+                img.classList.add('opacity-0');
+
+                setTimeout(() => {
+                    img.src = currentImages[i];
+                    img.classList.remove('opacity-0');
+                }, 150);
             }
-        });
 
-        document.querySelectorAll('.accordion-btn').forEach(button => {
+            function updateArrows() {
+                const has = currentImages.length > 1;
+                next.classList.toggle('hidden', !has);
+                prev.classList.toggle('hidden', !has);
+            }
 
-            button.addEventListener('click', () => {
-
-                const targetId = button.dataset.target;
-                const content = document.getElementById(targetId);
-
-                const icon = button.querySelector('.accordion-icon');
-                const isOpen = content.style.maxHeight;
-
-                // закрыть все
-                document.querySelectorAll('.accordion-content').forEach(el => {
-                    el.style.maxHeight = null;
-                });
-
-                document.querySelectorAll('.accordion-icon').forEach(i => {
-                    i.textContent = '˅';
-                });
-
-                // открыть текущий
-                if (!isOpen) {
-                    content.style.maxHeight = content.scrollHeight + 'px';
-                    icon.textContent = '˄';
-                }
+            next?.addEventListener('click', () => {
+                currentIndex = (currentIndex + 1) % currentImages.length;
+                updateImage(currentIndex);
             });
 
+            prev?.addEventListener('click', () => {
+                currentIndex = (currentIndex - 1 + currentImages.length) % currentImages.length;
+                updateImage(currentIndex);
+            });
+
+            colorButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+
+                    const color = btn.dataset.color;
+                    if (colorInput.value === color) return;
+
+                    colorInput.value = color;
+                    currentColor = color;
+                    currentImages = imagesByColor[color] || [];
+                    currentIndex = 0;
+
+                    if (currentImages.length) {
+                        updateImage(0);
+                    } else {
+                        img.src = '/images/placeholder.jpg';
+                    }
+
+                    updateArrows();
+                });
+            });
+
+            updateArrows();
         });
     </script>
 

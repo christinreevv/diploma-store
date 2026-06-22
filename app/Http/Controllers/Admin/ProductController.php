@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Color;
+use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\Size;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -27,7 +30,46 @@ class ProductController extends Controller
             ->latest()
             ->paginate(10);
 
-        return view('admin.products.index', compact('products'));
+        // Общая выручка
+        $totalRevenue = OrderItem::sum(
+            DB::raw('price * quantity')
+        );
+
+        // Всего заказов
+        $totalOrders = Order::count();
+
+        // Продано товаров
+        $totalSold = OrderItem::sum('quantity');
+
+        // Топ товаров
+        $topProducts = OrderItem::select(
+            'product_id',
+            DB::raw('SUM(quantity) as total')
+        )
+            ->with('product')
+            ->groupBy('product_id')
+            ->orderByDesc('total')
+            ->take(5)
+            ->get();
+
+        $topColors = OrderItem::select(
+            'product_color_id',
+            DB::raw('SUM(quantity) as total')
+        )
+            ->with('productColor.color')
+            ->groupBy('product_color_id')
+            ->orderByDesc('total')
+            ->take(5)
+            ->get();
+
+        return view('admin.products.index', compact(
+            'products',
+            'totalRevenue',
+            'totalOrders',
+            'totalSold',
+            'topProducts',
+            'topColors'
+        ));
     }
 
     // =========================================================
@@ -192,9 +234,9 @@ class ProductController extends Controller
             'color_images.*.*' => 'file|image|max:2048',
             'price' => 'nullable|numeric|min:0',
             'stock' => 'nullable|integer|min:0',
-
         ]);
 
+        // ================= PRODUCT =================
         $product->update([
             'title' => $data['title'],
             'description' => $data['description'] ?? null,
@@ -204,89 +246,93 @@ class ProductController extends Controller
             'is_limited' => $request->boolean('is_limited'),
         ]);
 
-        // ---------------- DELETE IMAGES ----------------
+        // ================= DELETE IMAGES =================
         if ($request->filled('deleted_images')) {
 
-            $deleted = json_decode($request->deleted_images, true);
+            $deleted = json_decode($request->deleted_images, true) ?? [];
 
-            if (! empty($deleted)) {
+            $images = \App\Models\ProductImage::whereIn('id', $deleted)->get();
 
-                $images = \App\Models\ProductImage::whereIn('id', $deleted)->get();
+            foreach ($images as $img) {
 
-                foreach ($images as $img) {
+                Storage::disk('public')->delete($img->path);
 
-                    Storage::disk('public')->delete($img->path);
-                    $img->delete();
+                $productColor = $img->productColor;
 
-                    // после удаления сразу проверяем цвет
-                    $productColor = $img->productColor;
+                $img->delete();
 
-                    if ($productColor && $productColor->images()->count() === 0) {
-                        $productColor->delete();
-                    }
+                if ($productColor && $productColor->images()->count() === 0) {
+                    $productColor->delete();
                 }
             }
         }
 
-        $productColors = $product->productColors()->with('images')->get();
-
-        foreach ($productColors as $productColor) {
-
-            // если у цвета нет изображений — удаляем связь
-            if ($productColor->images->count() === 0) {
-
-                $productColor->delete();
-            }
-        }
-
-        // Обновление размеров
+        // ================= SIZES =================
         if (! empty($data['sizes'])) {
             $attachData = [];
+
             foreach ($data['sizes'] as $sizeId) {
                 $attachData[$sizeId] = [
                     'price' => $data['price'] ?? 0,
                     'stock' => $data['stock'] ?? 0,
                 ];
             }
+
             $product->sizes()->sync($attachData);
         }
 
-        // Обновление цветов
+        // ================= COLORS =================
         if (! empty($data['colors'])) {
 
             foreach ($data['colors'] as $colorId) {
 
-                // получаем или создаём связку товара и цвета
                 $productColor = \App\Models\ProductColor::firstOrCreate([
                     'product_id' => $product->id,
                     'color_id' => $colorId,
                 ]);
 
-                // ЕСЛИ ЗАГРУЖЕНЫ НОВЫЕ ФОТО
-                if ($request->hasFile("color_images.$colorId")) {
+                $files = $request->file("color_images.$colorId", []);
 
-                    // удалить старые фото
-                    foreach ($productColor->images as $oldImage) {
+                if (! is_array($files)) {
+                    $files = [$files];
+                }
 
-                        Storage::disk('public')->delete($oldImage->path);
+                foreach ($files as $image) {
 
-                        $oldImage->delete();
+                    if (! $image) {
+                        continue;
                     }
 
-                    // сохранить новые
-                    foreach ($request->file("color_images.$colorId") as $image) {
+                    $path = $image->store('products/colors', 'public');
 
-                        $path = $image->store('products/colors', 'public');
-
-                        $productColor->images()->create([
-                            'path' => $path,
-                        ]);
-                    }
+                    $productColor->images()->create([
+                        'path' => $path,
+                        'is_main' => $productColor->images()->count() === 0,
+                        'sort_order' => ($productColor->images()->max('sort_order') ?? 0) + 1,
+                    ]);
                 }
             }
         }
 
-        return redirect()->route('admin.products.edit', $product->id)
+        // ================= REMOVE UNSELECTED COLORS (SAFE) =================
+        $selectedColors = $data['colors'] ?? [];
+
+        $product->productColors()
+            ->whereNotIn('color_id', $selectedColors)
+            ->with('images')
+            ->get()
+            ->each(function ($pc) {
+
+                foreach ($pc->images as $img) {
+                    Storage::disk('public')->delete($img->path);
+                }
+
+                $pc->images()->delete();
+                $pc->delete();
+            });
+
+        return redirect()
+            ->route('admin.products.edit', $product->id)
             ->with('success', 'Продукт успешно обновлен!');
     }
 
@@ -294,47 +340,80 @@ class ProductController extends Controller
     // SHOW
     // =========================================================
 
-    public function show($slug)
-    {
-        $product = Product::with([
-            'sizes',
-            'productColors.color',
-            'productColors.images',
-            'images',
-            'category.matches',
-        ])->where('slug', $slug)->firstOrFail();
+   public function show(Request $request, $slug, $color = null)
+{
+    $product = Product::with([
+        'sizes',
+        'productColors.color',
+        'productColors.images',
+        'images',
+        'category.matches',
+    ])->where('slug', $slug)->firstOrFail();
 
-        // Дефолтное изображение
-        $defaultImage = $product->images->where('is_main', true)->first();
+    $color = $color ?: $request->route('color');
 
-        if (! $defaultImage && $product->images->count()) {
-            $defaultImage = $product->images->first();
-        }
+    $selectedColor = null;
 
-        // категории для блока "Покупают вместе"
-        $matchedCategoryIds = $product->category
-            ?->matches
-            ->pluck('id')
-            ->toArray() ?? [];
-
-        $recommendedProducts = Product::with([
-            'sizes',
-            'productColors.images',
-            'productColors.color',
-        ])
-            ->whereIn('category_id', $matchedCategoryIds)
-            ->where('id', '!=', $product->id)
-            ->inRandomOrder()
-            ->take(12)
-            ->get();
-
-        return view('products.show', [
-            'product' => $product,
-            'defaultImage' => $defaultImage ? $defaultImage->path : null,
-            'selectedColorKey' => $product->productColors->first()?->color->key ?? null,
-            'recommendedProducts' => $recommendedProducts,
-        ]);
+    if ($color) {
+        $selectedColor = $product->productColors
+            ->first(function ($productColor) use ($color) {
+                return $productColor->color
+                    && \Illuminate\Support\Str::slug($productColor->color->title) === $color;
+            });
     }
+
+    if (!$selectedColor) {
+        $selectedColor = $product->productColors->first();
+    }
+
+    $defaultImage = $selectedColor?->images
+        ->firstWhere('is_main', true);
+
+    if (!$defaultImage) {
+        $defaultImage = $selectedColor?->images->first();
+    }
+
+    $matchedCategoryIds = $product->category?->matches
+        ->pluck('id')
+        ->toArray() ?? [];
+
+    $recommendedProducts = Product::with([
+        'sizes',
+        'productColors.images',
+        'productColors.color',
+    ])
+        ->whereIn('category_id', $matchedCategoryIds)
+        ->where('id', '!=', $product->id)
+        ->inRandomOrder()
+        ->take(12)
+        ->get();
+
+    // -----------------------------
+    // CART STATE (ВАЖНО)
+    // -----------------------------
+    $inCart = false;
+
+    if (auth()->check() && $selectedColor) {
+
+        $cart = \App\Models\Cart::where('user_id', auth()->id())->first();
+
+        if ($cart) {
+            $inCart = $cart->items()
+                ->where('product_id', $product->id)
+                ->where('product_color_id', $selectedColor->id)
+                ->exists();
+        }
+    }
+
+    return view('products.show', [
+        'product' => $product,
+        'defaultImage' => $defaultImage,
+        'selectedColorKey' => \Illuminate\Support\Str::slug($selectedColor?->color?->title),
+        'selectedColor' => $selectedColor,
+        'recommendedProducts' => $recommendedProducts,
+        'inCart' => $inCart,
+    ]);
+}
     // =========================================================
     // DELETE
     // =========================================================

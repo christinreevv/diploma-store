@@ -57,6 +57,58 @@
 
         </div>
 
+        <div class="bg-white rounded-sm shadow p-6">
+
+            <h3 class="text-lg font-semibold mb-4">
+                Топ товаров
+            </h3>
+
+            <div class="space-y-2">
+
+                @foreach ($topProducts as $item)
+                    <div class="flex justify-between">
+
+                        <span>
+                            {{ $item->product?->title }}
+                        </span>
+
+                        <span class="font-semibold">
+                            {{ $item->total }} шт.
+                        </span>
+
+                    </div>
+                @endforeach
+
+            </div>
+
+        </div>
+
+        <div class="bg-white rounded-sm shadow p-6">
+
+            <h3 class="text-lg font-semibold mb-4">
+                Популярные цвета
+            </h3>
+
+            <div class="space-y-2">
+
+                @foreach ($topColors as $item)
+                    <div class="flex justify-between">
+
+                        <span>
+                            {{ $item->color?->title }}
+                        </span>
+
+                        <span class="font-semibold">
+                            {{ $item->total }} заказов
+                        </span>
+
+                    </div>
+                @endforeach
+
+            </div>
+
+        </div>
+
         {{-- KPI --}}
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
 
@@ -201,7 +253,37 @@
 
                 </tbody>
             </table>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
 
+                <div class="bg-white p-6 rounded-sm shadow">
+                    <p class="text-gray-500 text-sm">Выручка</p>
+                    <p class="text-2xl font-semibold">
+                        {{ number_format($totalRevenue, 0, '', ' ') }} ₽
+                    </p>
+                </div>
+
+                <div class="bg-white p-6 rounded-sm shadow">
+                    <p class="text-gray-500 text-sm">Заказов</p>
+                    <p class="text-2xl font-semibold">
+                        {{ $totalOrders }}
+                    </p>
+                </div>
+
+                <div class="bg-white p-6 rounded-sm shadow">
+                    <p class="text-gray-500 text-sm">Продано товаров</p>
+                    <p class="text-2xl font-semibold">
+                        {{ $totalSold }}
+                    </p>
+                </div>
+
+                <div class="bg-white p-6 rounded-sm shadow">
+                    <p class="text-gray-500 text-sm">Средний чек</p>
+                    <p class="text-2xl font-semibold">
+                        {{ $totalOrders ? number_format($totalRevenue / $totalOrders, 0, '', ' ') : 0 }} ₽
+                    </p>
+                </div>
+
+            </div>
         </div>
 
         {{-- PAGINATION --}}

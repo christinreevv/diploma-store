@@ -197,10 +197,10 @@
 
                     $price = $product->sizes->first()?->pivot->price ?? 0;
 
-                    $productUrl = route('products.show', [
-                        'product' => $product->slug,
-                        'color' => $color?->key ?? 'default',
-                    ]);
+                 $productUrl = route('products.show', [
+    'slug' => $product->slug,
+    'color' => $color?->color?->code,
+]);
                 @endphp
 
                 <a href="{{ $productUrl }}" class="shrink-0 w-72">

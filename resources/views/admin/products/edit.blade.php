@@ -116,22 +116,27 @@
                                 </div>
 
                                 {{-- мини-превью фото + загрузка --}}
-                                <div id="upload-{{ $color->id }}"
-                                    class="rounded-sm {{ $checked ? '' : 'hidden' }}">
+                                <div id="upload-{{ $color->id }}" class="rounded-sm {{ $checked ? '' : 'hidden' }}">
 
                                     {{-- превью (старые фото) --}}
                                     <div class="flex items-center gap-2 overflow-x-auto pb-1">
 
                                         @if ($productColor && $productColor->images->count())
                                             @foreach ($productColor->images as $img)
-                                                <div class="relative w-12 h-12 flex-shrink-0 group">
+                                                <div class="relative w-12 h-12 group image-wrapper"
+                                                    data-id="{{ $img->id }}">
 
                                                     <img src="{{ Storage::url($img->path) }}"
-                                                        class="w-12 h-12 object-cover rounded-md border shadow-sm">
+                                                        class="w-12 h-12 object-cover rounded-md border shadow-sm transition group-hover:opacity-50">
 
+                                                    {{-- ОДИН СЛОЙ НА ВСЮ КАРТИНКУ --}}
                                                     <button type="button"
-                                                        class="delete-image-btn absolute -top-1 -right-1 bg-black/70 text-white text-[10px] w-4 h-4 rounded-full opacity-0 group-hover:opacity-100 transition"
-                                                        data-id="{{ $img->id }}">
+                                                        class="delete-image-btn absolute inset-0 w-full h-full
+                   flex items-center justify-center
+                   text-white text-2xl font-light
+                   bg-black/0 group-hover:bg-black/40
+                   opacity-0 group-hover:opacity-100
+                   transition">
                                                         ×
                                                     </button>
 
@@ -139,19 +144,13 @@
                                             @endforeach
                                         @endif
 
-                                        {{-- превью новых файлов --}}
                                         <div class="preview-{{ $color->id }} flex items-center gap-2"></div>
 
-                                        {{-- кнопка добавления --}}
                                         <label
-                                            class="w-12 h-12 flex items-center justify-center border border-dashed rounded-md cursor-pointer
-                      hover:bg-white hover:border-gray-400 transition text-gray-400 shrink-0">
-
+                                            class="w-12 h-12 flex items-center justify-center border border-dashed rounded-md cursor-pointer">
                                             <input type="file" name="color_images[{{ $color->id }}][]" multiple
                                                 class="hidden color-file-input" data-id="{{ $color->id }}">
-
-                                            <span class="text-xl leading-none font-light">+</span>
-
+                                            <span class="text-xl">+</span>
                                         </label>
 
                                     </div>
@@ -227,7 +226,15 @@
             </form>
         </div>
 
-
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
     </div>
 
@@ -241,17 +248,19 @@
                 btn.addEventListener('click', function() {
 
                     const wrapper = this.closest('.image-wrapper');
-                    const imageId = wrapper.dataset.id;
 
-                    // добавляем в список удаления
-                    deletedImages.push(imageId);
+                    const id = wrapper.dataset.id;
 
-                    // записываем в hidden input
-                    document.getElementById('deletedImages').value = JSON.stringify(deletedImages);
+                    if (!deletedImages.includes(id)) {
+                        deletedImages.push(id);
+                    }
 
-                    // визуально удаляем
-                    wrapper.remove();
+                    document.getElementById('deletedImages').value =
+                        JSON.stringify(deletedImages);
+
+                    wrapper.style.display = 'none';
                 });
+
             });
 
         });
