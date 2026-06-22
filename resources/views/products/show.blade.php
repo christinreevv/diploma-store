@@ -486,7 +486,7 @@
                         );
                     });
 
-                    return;
+                    return; 
                 }
 
                 const response = await fetch("{{ route('cart.add', $product->slug) }}", {
