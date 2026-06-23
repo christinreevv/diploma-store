@@ -114,56 +114,56 @@
                         $price = $product->sizes->first()?->pivot->price ?? 0;
                     @endphp
 
-                 <a href="{{ route('products.show', $product->slug) }}" class="shrink-0 w-64 block group">
+                    <a href="{{ route('products.show', $product->slug) }}" class="shrink-0 w-64 block group">
 
-    <div class="relative aspect-[3/4] overflow-hidden bg-gray-100">
+                        <div class="relative aspect-[3/4] overflow-hidden bg-gray-100">
 
-        {{-- IMAGE --}}
-        <img src="{{ $imageUrl }}" alt="{{ $product->title }}"
-            class="w-full h-full object-cover transition duration-700 group-hover:scale-110 group-hover:brightness-90">
+                            {{-- IMAGE --}}
+                            <img src="{{ $imageUrl }}" alt="{{ $product->title }}"
+                                class="w-full h-full object-cover transition duration-700 group-hover:scale-110 group-hover:brightness-90">
 
-        {{-- OVERLAY --}}
-        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition duration-500"></div>
+                            {{-- OVERLAY --}}
+                            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition duration-500"></div>
 
-        {{-- BORDER EFFECT --}}
-        <div
-            class="absolute inset-0 border border-white/0 group-hover:border-white/40 transition duration-500">
-        </div>
+                            {{-- BORDER EFFECT --}}
+                            <div
+                                class="absolute inset-0 border border-white/0 group-hover:border-white/40 transition duration-500">
+                            </div>
 
-        {{-- QUICK VIEW --}}
-        <div
-            class="absolute inset-0 flex items-center justify-center opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition duration-500">
+                            {{-- QUICK VIEW --}}
+                            <div
+                                class="absolute inset-0 flex items-center justify-center opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition duration-500">
 
-            <span class="text-white text-xs tracking-[0.3em] uppercase">
-                Quick view
-            </span>
+                                <span class="text-white text-xs tracking-[0.3em] uppercase">
+                                    Quick view
+                                </span>
 
-        </div>
+                            </div>
 
-    </div>
+                        </div>
 
-    {{-- TEXT --}}
-    <div class="mt-3">
+                        {{-- TEXT --}}
+                        <div class="mt-3">
 
-        <h4 class="font-medium text-gray-900 truncate group-hover:text-black transition">
-            {{ $product->title }}
-        </h4>
+                            <h4 class="font-medium text-gray-900 truncate group-hover:text-black transition">
+                                {{ $product->title }}
+                            </h4>
 
-        <div class="flex items-center justify-between mt-2">
+                            <div class="flex items-center justify-between mt-2">
 
-            <span class="text-gray-700">
-                {{ number_format($price, 0, ',', ' ') }} ₽
-            </span>
+                                <span class="text-gray-700">
+                                    {{ number_format($price, 0, ',', ' ') }} ₽
+                                </span>
 
-            <span class="text-xs px-2 py-1 rounded-full bg-black text-white">
-                {{ $item->total }} шт.
-            </span>
+                                <span class="text-xs px-2 py-1 rounded-full bg-black text-white">
+                                    {{ $item->total }} шт.
+                                </span>
 
-        </div>
+                            </div>
 
-    </div>
+                        </div>
 
-</a>
+                    </a>
                 @endforeach
 
             </div>
@@ -232,29 +232,32 @@
 
                 <div class="border border-gray-200 overflow-hidden">
 
-                  {{-- фото --}}
-<div class="aspect-[4/5] bg-gray-100 overflow-hidden relative group">
+                    {{-- фото --}}
+                    <div class="aspect-[4/5] bg-gray-100 overflow-hidden relative group">
 
-    @if ($mainImage)
-        <img src="{{ asset('storage/' . $mainImage->path) }}"
-             class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
-    @endif
+                        @if ($mainImage)
+                            <img src="{{ asset('storage/' . $mainImage->path) }}"
+                                class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                        @endif
 
-    {{-- затемнение при hover --}}
-    <div class="absolute inset-0 bg-black/0 group-hover:bg-black/25 transition"></div>
+                        {{-- затемнение при hover --}}
+                        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/25 transition"></div>
 
-    {{-- нижний градиент (дорогой эффект как в fashion ecom) --}}
-    <div class="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition"></div>
+                        {{-- нижний градиент (дорогой эффект как в fashion ecom) --}}
+                        <div
+                            class="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition">
+                        </div>
 
-    {{-- кнопка появляется при hover --}}
-    <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
-        <a href="{{ route('products.show', $product->slug) }}"
-           class="px-4 py-2 text-sm bg-white text-black hover:bg-black hover:text-white transition">
-            Смотреть
-        </a>
-    </div>
+                        {{-- кнопка появляется при hover --}}
+                        <div
+                            class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                            <a href="{{ route('products.show', $product->slug) }}"
+                                class="px-4 py-2 text-sm bg-white text-black hover:bg-black hover:text-white transition">
+                                Смотреть
+                            </a>
+                        </div>
 
-</div>
+                    </div>
 
                     {{-- контент --}}
                     <div class="p-5">
@@ -273,22 +276,22 @@
 
                             </div>
 
-                            <form action="{{ route('admin.products.toggle-status', $product) }}" method="POST">
-                                @csrf
-                                @method('PATCH')
+                           <button
+    type="button"
+    class="flex items-center gap-2 text-xs js-toggle-status"
+    data-id="{{ $product->id }}"
+    data-url="{{ route('admin.products.toggle-status', $product) }}"
+>
 
-                                <button class="flex items-center gap-2 text-xs">
+    <span class="w-2 h-2 rounded-full status-dot
+        {{ $product->is_active ? 'bg-green-500' : 'bg-gray-300' }}">
+    </span>
 
-                                    <span
-                                        class="w-2 h-2 rounded-full
-                                {{ $product->is_active ? 'bg-green-500' : 'bg-gray-300' }}">
-                                    </span>
+    <span class="status-text">
+        {{ $product->is_active ? 'Активен' : 'Скрыт' }}
+    </span>
 
-                                    {{ $product->is_active ? 'Активен' : 'Скрыт' }}
-
-                                </button>
-
-                            </form>
+</button>
 
                         </div>
 
@@ -347,5 +350,47 @@
     </div>
 
     </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    document.querySelectorAll('.js-toggle-status').forEach(btn => {
+
+        btn.addEventListener('click', async function () {
+
+            const url = this.dataset.url;
+
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ _method: 'PATCH' })
+            });
+
+            if (!res.ok) return;
+
+            const data = await res.json();
+
+            const dot = this.querySelector('.status-dot');
+            const text = this.querySelector('.status-text');
+
+            if (data.is_active) {
+                dot.classList.remove('bg-gray-300');
+                dot.classList.add('bg-green-500');
+                text.textContent = 'Активен';
+            } else {
+                dot.classList.remove('bg-green-500');
+                dot.classList.add('bg-gray-300');
+                text.textContent = 'Скрыт';
+            }
+        });
+
+    });
+
+});
+</script>
 
 @endsection

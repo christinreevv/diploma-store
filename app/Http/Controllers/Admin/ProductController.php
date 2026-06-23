@@ -464,10 +464,11 @@ class ProductController extends Controller
 
     public function toggleStatus(Product $product)
     {
-        $product->update([
-            'is_active' => ! $product->is_active,
-        ]);
+        $product->is_active = ! $product->is_active;
+        $product->save();
 
-        return back();
+        return response()->json([
+            'is_active' => $product->is_active,
+        ]);
     }
 }
