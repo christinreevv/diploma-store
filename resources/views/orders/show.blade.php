@@ -109,9 +109,34 @@
             {{-- RIGHT: SUMMARY --}}
             <div class="bg-white border rounded-sm p-6 h-fit">
 
-                <h2 class="text-lg font-medium mb-5">
-                    Информация о заказе
-                </h2>
+               <h2 class="text-lg font-medium mb-5">
+    Информация о заказе
+</h2>
+
+<div class="mb-5">
+    @if ($order->payment_status === 'paid')
+        <div class="px-3 py-2 border border-green-200 bg-green-50 text-green-700 text-sm rounded-sm">
+            ✓ Заказ оплачен
+        </div>
+    @elseif ($order->payment_status === 'failed')
+        <div class="px-3 py-2 border border-red-200 bg-red-50 text-red-700 text-sm rounded-sm">
+            ✕ Ошибка оплаты
+        </div>
+    @else
+        <div class="px-3 py-2 border border-amber-200 bg-amber-50 text-amber-700 text-sm rounded-sm">
+            ⏳ Ожидает оплаты
+        </div>
+    @endif
+</div>
+
+                @if ($order->payment_status !== 'paid')
+                    @if ($order->payment_status !== 'paid')
+                        <a href="{{ route('checkout.payment', $order) }}"
+                            class="block w-full text-center bg-gray-900 text-white py-3 rounded-sm hover:bg-gray-800 transition">
+                            Перейти к оплате
+                        </a>
+                    @endif
+                @endif
 
                 <div class="space-y-4 text-sm">
 

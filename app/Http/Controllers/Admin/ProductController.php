@@ -340,80 +340,80 @@ class ProductController extends Controller
     // SHOW
     // =========================================================
 
-   public function show(Request $request, $slug, $color = null)
-{
-    $product = Product::with([
-        'sizes',
-        'productColors.color',
-        'productColors.images',
-        'images',
-        'category.matches',
-    ])->where('slug', $slug)->firstOrFail();
+    public function show(Request $request, $slug, $color = null)
+    {
+        $product = Product::with([
+            'sizes',
+            'productColors.color',
+            'productColors.images',
+            'images',
+            'category.matches',
+        ])->where('slug', $slug)->firstOrFail();
 
-    $color = $color ?: $request->route('color');
+        $color = $color ?: $request->route('color');
 
-    $selectedColor = null;
+        $selectedColor = null;
 
-    if ($color) {
-        $selectedColor = $product->productColors
-            ->first(function ($productColor) use ($color) {
-                return $productColor->color
-                    && \Illuminate\Support\Str::slug($productColor->color->title) === $color;
-            });
-    }
-
-    if (!$selectedColor) {
-        $selectedColor = $product->productColors->first();
-    }
-
-    $defaultImage = $selectedColor?->images
-        ->firstWhere('is_main', true);
-
-    if (!$defaultImage) {
-        $defaultImage = $selectedColor?->images->first();
-    }
-
-    $matchedCategoryIds = $product->category?->matches
-        ->pluck('id')
-        ->toArray() ?? [];
-
-    $recommendedProducts = Product::with([
-        'sizes',
-        'productColors.images',
-        'productColors.color',
-    ])
-        ->whereIn('category_id', $matchedCategoryIds)
-        ->where('id', '!=', $product->id)
-        ->inRandomOrder()
-        ->take(12)
-        ->get();
-
-    // -----------------------------
-    // CART STATE (ВАЖНО)
-    // -----------------------------
-    $inCart = false;
-
-    if (auth()->check() && $selectedColor) {
-
-        $cart = \App\Models\Cart::where('user_id', auth()->id())->first();
-
-        if ($cart) {
-            $inCart = $cart->items()
-                ->where('product_id', $product->id)
-                ->where('product_color_id', $selectedColor->id)
-                ->exists();
+        if ($color) {
+            $selectedColor = $product->productColors
+                ->first(function ($productColor) use ($color) {
+                    return $productColor->color
+                        && \Illuminate\Support\Str::slug($productColor->color->title) === $color;
+                });
         }
-    }
 
-    return view('products.show', [
-        'product' => $product,
-        'defaultImage' => $defaultImage,
-        'selectedColorKey' => \Illuminate\Support\Str::slug($selectedColor?->color?->title),
-        'selectedColor' => $selectedColor,
-        'recommendedProducts' => $recommendedProducts,
-        'inCart' => $inCart,
-    ]);
-}
+        if (! $selectedColor) {
+            $selectedColor = $product->productColors->first();
+        }
+
+        $defaultImage = $selectedColor?->images
+            ->firstWhere('is_main', true);
+
+        if (! $defaultImage) {
+            $defaultImage = $selectedColor?->images->first();
+        }
+
+        $matchedCategoryIds = $product->category?->matches
+            ->pluck('id')
+            ->toArray() ?? [];
+
+        $recommendedProducts = Product::with([
+            'sizes',
+            'productColors.images',
+            'productColors.color',
+        ])
+            ->whereIn('category_id', $matchedCategoryIds)
+            ->where('id', '!=', $product->id)
+            ->inRandomOrder()
+            ->take(12)
+            ->get();
+
+        // -----------------------------
+        // CART STATE (ВАЖНО)
+        // -----------------------------
+        $inCart = false;
+
+        if (auth()->check() && $selectedColor) {
+
+            $cart = \App\Models\Cart::where('user_id', auth()->id())->first();
+
+            if ($cart) {
+                $inCart = $cart->items()
+                    ->where('product_id', $product->id)
+                    ->where('product_color_id', $selectedColor->id)
+                    ->exists();
+            }
+        }
+
+        return view('products.show', [
+            'product' => $product,
+            'defaultImage' => $defaultImage,
+            'selectedColorKey' => \Illuminate\Support\Str::slug($selectedColor?->color?->title),
+            'selectedColor' => $selectedColor,
+            'recommendedProducts' => $recommendedProducts,
+            'inCart' => $inCart,
+        ]);
+    }
     // =========================================================
     // DELETE
     // =========================================================

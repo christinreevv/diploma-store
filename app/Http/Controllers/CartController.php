@@ -36,61 +36,61 @@ class CartController extends Controller
 
     // -------------------------------------------- добавление в корзину --------------------------------------------
 
-public function add(Request $request, $slug)
-{
-    if (!Auth::check()) {
-        return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
-    }
+    public function add(Request $request, $slug)
+    {
+        if (! Auth::check()) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+        }
 
-    $request->validate([
-        'color' => 'required',
-        'size_id' => 'required|exists:sizes,id',
-    ]);
+        $request->validate([
+            'color' => 'required',
+            'size_id' => 'required|exists:sizes,id',
+        ]);
 
-    $product = Product::where('slug', $slug)
-        ->with(['productColors.color', 'sizes'])
-        ->firstOrFail();
+        $product = Product::where('slug', $slug)
+            ->with(['productColors.color', 'sizes'])
+            ->firstOrFail();
 
-    $productColor = $product->productColors()
-        ->where('color_id', $request->color)
-        ->first();
+        $productColor = $product->productColors()
+            ->where('color_id', $request->color)
+            ->first();
 
-    $productSize = ProductSize::where('product_id', $product->id)
-        ->where('size_id', $request->size_id)
-        ->firstOrFail();
+        $productSize = ProductSize::where('product_id', $product->id)
+            ->where('size_id', $request->size_id)
+            ->firstOrFail();
 
-    if (!$productColor || !$productSize) {
-        return response()->json(['success' => false, 'message' => 'Invalid data'], 422);
-    }
+        if (! $productColor || ! $productSize) {
+            return response()->json(['success' => false, 'message' => 'Invalid data'], 422);
+        }
 
-    $cart = Cart::firstOrCreate([
-        'user_id' => Auth::id(),
-    ]);
+        $cart = Cart::firstOrCreate([
+            'user_id' => Auth::id(),
+        ]);
 
-    $item = $cart->items()
-        ->where('product_id', $product->id)
-        ->where('product_color_id', $productColor->id)
-        ->where('product_size_id', $productSize->id)
-        ->first();
+        $item = $cart->items()
+            ->where('product_id', $product->id)
+            ->where('product_color_id', $productColor->id)
+            ->where('product_size_id', $productSize->id)
+            ->first();
 
-    if ($item) {
-        $item->increment('quantity', 1);
-    } else {
-        $item = $cart->items()->create([
-            'product_id' => $product->id,
-            'product_color_id' => $productColor->id,
-            'product_size_id' => $productSize->id,
-            'price' => $productSize->price,
-            'quantity' => 1,
+        if ($item) {
+            $item->increment('quantity', 1);
+        } else {
+            $item = $cart->items()->create([
+                'product_id' => $product->id,
+                'product_color_id' => $productColor->id,
+                'product_size_id' => $productSize->id,
+                'price' => $productSize->price,
+                'quantity' => 1,
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Товар добавлен в корзину',
+            'quantity' => $item->quantity,
         ]);
     }
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Товар добавлен в корзину',
-        'quantity' => $item->quantity,
-    ]);
-}
 
     // -------------------------------------------- обновление корзины --------------------------------------------
 
@@ -137,4 +137,6 @@ public function add(Request $request, $slug)
 
         return back()->with('success', 'Корзина очищена');
     }
+
+    
 }

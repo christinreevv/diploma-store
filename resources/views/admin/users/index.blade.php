@@ -4,11 +4,7 @@
 
 @section('breadcrumbs')
     @php
-        $breadcrumbs = [
-            ['label' => 'Главная', 'url' => url('/')],
-            ['label' => 'Админ-панель', 'url' => route('admin.products.index')],
-            ['label' => 'Пользователи', 'url' => '#'],
-        ];
+        $breadcrumbs = [['label' => 'Главная', 'url' => url('/')], ['label' => 'Пользователи', 'url' => '#']];
     @endphp
 
     <x-breadcrumbs :items="$breadcrumbs" />

@@ -28,9 +28,7 @@
                         $images = $color?->images ?? collect();
                         $image = $images->where('is_main', true)->first() ?? $images->first();
 
-                        $imageUrl = $image
-                            ? Storage::url($image->path)
-                            : asset('images/placeholder.jpg');
+                        $imageUrl = $image ? Storage::url($image->path) : asset('images/placeholder.jpg');
 
                         $price = $product->sizes->first()?->pivot->price ?? 0;
 
@@ -41,10 +39,7 @@
 
                         $inFavorite =
                             auth()->check() &&
-                            auth()->user()
-                                ->favorites()
-                                ->where('product_color_id', $color->id)
-                                ->exists();
+                            auth()->user()->favorites()->where('product_color_id', $color->id)->exists();
                     @endphp
 
                     <div class="relative flex flex-col">
@@ -55,8 +50,7 @@
 
                             {{-- Изображение --}}
                             <div class="aspect-[3/4] w-full overflow-hidden bg-white">
-                                <img src="{{ $imageUrl }}"
-                                    alt="{{ $product->title }} ({{ $color?->label ?? '' }})"
+                                <img src="{{ $imageUrl }}" alt="{{ $product->title }} ({{ $color?->label ?? '' }})"
                                     class="w-full h-full object-cover transition duration-300 group-hover:opacity-70">
                             </div>
                         </a>
@@ -65,25 +59,23 @@
                         <div class="pt-3 flex items-start justify-between gap-3">
 
                             <div class="flex flex-col text-left">
-                                <h5 class="text-sm lg:text-lg font-medium text-gray-800 leading-tight">
-                                    {{ $product->title }}
-                                </h5>
+    <h5 class="text-sm lg:text-base font-normal text-gray-900 leading-snug tracking-wide">
+        {{ $product->title }}
+    </h5>
 
-                                <p class="text-gray-700 font-semibold mt-1 text-sm lg:text-base">
-                                    {{ number_format($price, 0, ',', ' ') }} ₽
-                                </p>
-                            </div>
+    <p class="mt-1 text-sm lg:text-base text-gray-500 font-light tracking-wide">
+        {{ number_format($price, 0, ',', ' ') }} ₽
+    </p>
+</div>
 
                             {{-- Избранное --}}
                             <form method="POST" action="{{ route('favorites.toggle', $color->id) }}">
                                 @csrf
 
-                                <button type="submit"
-                                    onclick="event.stopPropagation()"
+                                <button type="submit" onclick="event.stopPropagation()"
                                     class="favorite-btn flex-shrink-0 w-8 h-8 flex items-center justify-center {{ $inFavorite ? 'active' : '' }}">
                                     <img src="{{ $inFavorite ? asset('favorite1.svg') : asset('favorite.png') }}"
-                                        class="w-5 h-5 lg:w-6 lg:h-6 favorite-img pointer-events-none"
-                                        alt="favorite">
+                                        class="w-5 h-5 lg:w-6 lg:h-6 favorite-img pointer-events-none" alt="favorite">
                                 </button>
                             </form>
                         </div>

@@ -38,12 +38,9 @@
                 {{-- АДМИН --}}
                 @auth
                     @if (auth()->user()->role === 'admin')
-                        <a href="{{ route('admin.dashboard') }}" class="text-[16px] hover:text-red-600 transition">
-                            Аналитика
-                        </a>
-                        {{-- <a href="{{ route('admin.products.index') }}" class="text-[14px] hover:text-red-600 transition">
+                        <a href="{{ route('admin.products.index') }}" class="text-[16px] hover:text-red-600 transition">
                             Товары
-                        </a> --}}
+                        </a>
                         <a href="{{ route('admin.users.index') }}" class="text-[16px] hover:text-red-600 transition">
                             Пользователи
                         </a>
@@ -117,8 +114,7 @@
 
                 @auth
                     @if (auth()->user()->role === 'admin')
-                        <a href="{{ route('admin.dashboard') }}">Аналитика</a>
-                        {{-- <a href="{{ route('admin.products.index') }}">Товары</a> --}}
+                        <a href="{{ route('admin.products.index') }}">Товары</a>
                         <a href="{{ route('admin.users.index') }}">Пользователи</a>
                     @endif
 

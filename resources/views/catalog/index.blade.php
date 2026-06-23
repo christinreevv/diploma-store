@@ -35,6 +35,8 @@
 
                     <form id="filter-form" method="GET" action="{{ route('catalog.index') }}" class="space-y-8">
 
+                        <input type="hidden" name="sort" id="sort-input" value="{{ request('sort') }}">
+
                         <div class="flex items-center justify-between border-b border-gray-100 pb-4">
                             <h3 class="text-sm uppercase tracking-[0.2em] font-semibold text-gray-900">
                                 Фильтры
@@ -146,15 +148,58 @@
                     </div>
 
                 </div>
-
-                {{-- Товары --}}
                 <div id="products-container" class="transition-opacity duration-200">
 
-                    <x-view-switch />
+                    <div class="mt-4 mb-6 flex items-center justify-between">
+                        <div class="flex items-center leading-none">
+                            <x-view-switch />
+                        </div>
+                        <div class="flex items-center">
+                            <div class="relative">
+
+                                <select id="sort-select" name="sort"
+                                    class="appearance-none bg-white border border-gray-200
+            pl-4 pr-10 py-2 text-sm text-gray-700
+            hover:border-gray-400
+            focus:border-black focus:ring-0 focus:outline-none
+            transition cursor-pointer">
+
+                                    <option value="">По умолчанию</option>
+                                    <option value="price_asc" {{ request('sort') === 'price_asc' ? 'selected' : '' }}>
+                                        Цена ↑
+                                    </option>
+                                    <option value="price_desc" {{ request('sort') === 'price_desc' ? 'selected' : '' }}>
+                                        Цена ↓
+                                    </option>
+                                    <option value="title_asc" {{ request('sort') === 'title_asc' ? 'selected' : '' }}>
+                                        Название А-Я
+                                    </option>
+                                    <option value="title_desc" {{ request('sort') === 'title_desc' ? 'selected' : '' }}>
+                                        Название Я-А
+                                    </option>
+                                    <option value="newest" {{ request('sort') === 'newest' ? 'selected' : '' }}>
+                                        Сначала новые
+                                    </option>
+
+                                </select>
+
+                                {{-- стрелка --}}
+                                <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </div>
+
+                            </div>
+                        </div>
+
+
+                    </div>
 
                     @include('catalog._products', ['products' => $products])
-                </div>
 
+                </div>
             </main>
 
         </div>
@@ -168,20 +213,33 @@
             const productsContainer = document.getElementById('products-container');
 
             let timeout;
+            let controller = null;
+
+            const sortSelect = document.getElementById('sort-select');
+            const hiddenSort = document.getElementById('sort-input');
+
+            if (sortSelect && hiddenSort) {
+                hiddenSort.value = sortSelect.value;
+            }
 
             function getQueryString(form) {
-                return new URLSearchParams(new FormData(form)).toString();
+                const formData = new FormData(form);
+                return new URLSearchParams(formData).toString();
             }
 
             async function loadProducts() {
 
-                productsContainer.style.opacity = '0.45';
+                // отменяем предыдущий запрос (ВАЖНО)
+                if (controller) controller.abort();
+                controller = new AbortController();
+
+                productsContainer.style.opacity = '0.5';
 
                 const url = filterForm.action + '?' + getQueryString(filterForm);
 
                 try {
-
                     const response = await fetch(url, {
+                        signal: controller.signal,
                         headers: {
                             'X-Requested-With': 'XMLHttpRequest'
                         }
@@ -189,39 +247,46 @@
 
                     const html = await response.text();
 
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, 'text/html');
-
+                    const doc = new DOMParser().parseFromString(html, 'text/html');
                     const newProducts = doc.querySelector('#products-container');
 
                     if (newProducts) {
                         productsContainer.innerHTML = newProducts.innerHTML;
                     }
 
-                } finally {
-
-                    setTimeout(() => {
-                        productsContainer.style.opacity = '1';
-                    }, 120);
-
+                } catch (e) {
+                    if (e.name !== 'AbortError') {
+                        console.error(e);
+                    }
                 }
+
+                productsContainer.style.opacity = '1';
             }
 
-            filterForm
-                .querySelectorAll('input[type="checkbox"]')
-                .forEach(cb => {
+            function triggerLoad() {
+                clearTimeout(timeout);
+                timeout = setTimeout(loadProducts, 150);
+            }
 
-                    cb.addEventListener('change', () => {
+            // =========================
+            // FILTERS
+            // =========================
+            filterForm.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                cb.addEventListener('change', triggerLoad);
+            });
 
-                        clearTimeout(timeout);
+            document.addEventListener('change', function(e) {
+                if (e.target && e.target.id === 'sort-select') {
 
-                        timeout = setTimeout(() => {
-                            loadProducts();
-                        }, 200);
+                    const hiddenSort = document.getElementById('sort-input');
 
-                    });
+                    if (hiddenSort) {
+                        hiddenSort.value = e.target.value;
+                    }
 
-                });
+                    triggerLoad();
+                }
+            });
 
         });
     </script>

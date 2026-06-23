@@ -7,7 +7,7 @@
 <div class="mb-12 py-8">
 
     {{-- стрелка назад --}}
-    <a href="{{ url()->previous() }}"
+  <a href="{{ route('admin.products.index') }}"
        class="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-black transition mb-6">
 
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

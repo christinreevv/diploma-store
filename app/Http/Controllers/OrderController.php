@@ -9,6 +9,11 @@ use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
+    public function paymentPage(Order $order)
+    {
+        return view('orders.payment', compact('order'));
+    }
+
     public function create()
     {
         $cart = Auth::user()->cart()
@@ -53,7 +58,9 @@ class OrderController extends Controller
         // 📦 СОЗДАНИЕ ЗАКАЗА
         $order = Order::create([
             'user_id' => Auth::id(),
-          'status' => 'Новый',
+            'status' => 'Новый',
+            'payment_status' => 'pending',
+
             'total_price' => $total,
 
             'city' => $request->city,
@@ -90,9 +97,42 @@ class OrderController extends Controller
         $order->load([
             'items.product',
             'items.productColor.images',
-            'items.productSize'
+            'items.productSize',
         ]);
 
         return view('orders.show', compact('order'));
+    }
+
+    public function fakePay(Request $request)
+    {
+        $order = Order::findOrFail($request->order_id);
+
+        $order->update([
+            'payment_status' => 'paid',
+        ]);
+
+        return redirect()
+            ->route('orders.show', $order)
+            ->with('success', 'Оплата прошла успешно');
+    }
+
+    public function webhook(Request $request)
+    {
+        $data = $request->all();
+
+        if ($data['event'] === 'payment.succeeded') {
+
+            $paymentId = $data['object']['id'];
+
+            $order = Order::where('payment_id', $paymentId)->first();
+
+            if ($order) {
+                $order->update([
+                    'payment_status' => 'paid',
+                ]);
+            }
+        }
+
+        return response()->json(['ok' => true]);
     }
 }

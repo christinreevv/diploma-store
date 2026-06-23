@@ -4,10 +4,7 @@
 
 @section('breadcrumbs')
     @php
-        $breadcrumbs = [
-            ['label' => 'Главная', 'url' => url('/')],
-            ['label' => 'Админ-панель', 'url' => route('admin.dashboard')],
-        ];
+        $breadcrumbs = [['label' => 'Главная', 'url' => url('/')], ['label' => 'Товары', 'url' => '#']];
     @endphp
 
     <x-breadcrumbs :items="$breadcrumbs" />
@@ -20,8 +17,7 @@
         {{-- HEADER --}}
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
-            <h1
-                style="font-family: 'Comfortaa', sans-serif; font-weight: 400; font-size: 1.875rem; line-height: 2.25rem; margin-bottom: 2.5rem; color: #4B5563;">
+            <h1 class="text-3xl font-light tracking-tight text-gray-600 mb-10">
                 Все товары
             </h1>
 

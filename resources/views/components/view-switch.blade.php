@@ -1,47 +1,41 @@
-<div class="flex items-center justify-between mb-8">
+<div class="flex items-center gap-2">
 
-    <div class="text-sm pe-3 text-gray-500">
+    {{-- 1 карточка --}}
+    <button onclick="setView(1)"
+        class="p-2 border hover:bg-black hover:text-white transition flex items-center justify-center">
 
-    </div>
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none">
+            <rect x="4" y="4" width="16" height="16" stroke="currentColor" />
+        </svg>
 
-    <div class="flex gap-2">
+    </button>
 
-        {{-- 1 карточка --}}
-        <button onclick="setView(1)"
-            class="p-2 border hover:bg-black hover:text-white transition">
+    {{-- 3x3 --}}
+  <button onclick="setView(3)"
+    class="p-2 border border-gray-300 hover:bg-black hover:text-white transition hidden lg:flex items-center justify-center">
 
-            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none">
-                <rect x="4" y="4" width="16" height="16" stroke="currentColor" />
-            </svg>
+    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
 
-        </button>
+        <rect x="4" y="4" width="6" height="6" />
+        <rect x="14" y="4" width="6" height="6" />
+        <rect x="4" y="14" width="6" height="6" />
+        <rect x="14" y="14" width="6" height="6" />
 
-        {{-- 3x3 --}}
-        <button onclick="setView(3)"
-            class="p-2 border hover:bg-black hover:text-white transition hidden lg:flex">
+    </svg>
 
-            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none">
-                <path d="M4 4H10V10H4V4Z" stroke="currentColor" />
-                <path d="M14 4H20V10H14V4Z" stroke="currentColor" />
-                <path d="M4 14H10V20H4V14Z" stroke="currentColor" />
-                <path d="M14 14H20V20H14V14Z" stroke="currentColor" />
-            </svg>
+</button>
 
-        </button>
+    {{-- 5 колонок --}}
+    <button onclick="setView(5)"
+        class="p-2 border hover:bg-black hover:text-white transition flex items-center justify-center">
 
-        {{-- 5 колонок --}}
-        <button onclick="setView(5)"
-            class="p-2 border hover:bg-black hover:text-white transition">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="5" width="3" height="14" stroke="currentColor" />
+            <rect x="8" y="5" width="3" height="14" stroke="currentColor" />
+            <rect x="13" y="5" width="3" height="14" stroke="currentColor" />
+            <rect x="18" y="5" width="3" height="14" stroke="currentColor" />
+        </svg>
 
-            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none">
-                <rect x="3" y="5" width="3" height="14" stroke="currentColor" />
-                <rect x="8" y="5" width="3" height="14" stroke="currentColor" />
-                <rect x="13" y="5" width="3" height="14" stroke="currentColor" />
-                <rect x="18" y="5" width="3" height="14" stroke="currentColor" />
-            </svg>
-
-        </button>
-
-    </div>
+    </button>
 
 </div>

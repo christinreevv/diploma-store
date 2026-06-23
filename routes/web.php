@@ -58,6 +58,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/cart/remove/{item}', [CartController::class, 'remove'])->name('cart.remove');
     Route::delete('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
     Route::get('/cart/check/{slug}', [CartController::class, 'check']);
+    
 
     // Профиль
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
@@ -78,7 +79,11 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/orders/{order}', [OrderController::class, 'show'])
         ->name('orders.show');
+    Route::post('/checkout/fake-pay', [OrderController::class, 'fakePay'])
+        ->name('checkout.fake-pay');
 
+    Route::get('/checkout/payment/{order}', [OrderController::class, 'paymentPage'])
+        ->name('checkout.payment');
     Route::view('/privacy', 'footer.privacy.index')
         ->name('privacy');
 });
