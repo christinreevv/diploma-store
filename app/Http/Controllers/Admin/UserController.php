@@ -23,4 +23,12 @@ class UserController extends Controller
 
         return view('admin.users.index', compact('users', 'search'));
     }
+public function show(User $user)
+{
+    $user->load([
+        'orders.items',
+    ]);
+
+    return view('admin.users.show', compact('user'));
+}
 }

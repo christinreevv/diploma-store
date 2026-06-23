@@ -44,6 +44,10 @@
                         <a href="{{ route('admin.users.index') }}" class="text-[16px] hover:text-red-600 transition">
                             Пользователи
                         </a>
+                        <a href="{{ route('admin.orders.index') }}"
+                           class="text-[16px] hover:text-red-600 transition">
+                            Заказы
+                        </a>
                     @endif
                 @endauth
 
@@ -69,6 +73,8 @@
                         <a href="{{ route('cart.index') }}">
                             <img src="{{ asset('cart.png') }}" class="w-6 h-6 hover:opacity-80 transition">
                         </a>
+
+
                     @endif
                 @endauth
 
@@ -116,6 +122,7 @@
                     @if (auth()->user()->role === 'admin')
                         <a href="{{ route('admin.products.index') }}">Товары</a>
                         <a href="{{ route('admin.users.index') }}">Пользователи</a>
+                          <a href="{{ route('admin.orders.index') }}">Пользователи</a>
                     @endif
 
                     <form action="{{ route('logout') }}" method="POST">

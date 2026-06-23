@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\CategoryMatchController;
 use App\Http\Controllers\Admin\ColorMatchController;
 use App\Http\Controllers\Admin\ProductController;
@@ -58,7 +57,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/cart/remove/{item}', [CartController::class, 'remove'])->name('cart.remove');
     Route::delete('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
     Route::get('/cart/check/{slug}', [CartController::class, 'check']);
-    
 
     // Профиль
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
@@ -79,6 +77,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/orders/{order}', [OrderController::class, 'show'])
         ->name('orders.show');
+
     Route::post('/checkout/fake-pay', [OrderController::class, 'fakePay'])
         ->name('checkout.fake-pay');
 
@@ -93,8 +92,6 @@ Route::prefix('admin')
     ->middleware(['auth', 'admin'])
     ->name('admin.')
     ->group(function () {
-
-        Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
 
         // Пользователи
         Route::resource('users', UserController::class)->only(['index', 'show', 'destroy']);
@@ -153,4 +150,13 @@ Route::prefix('admin')
             '/color-matches/{color}',
             [ColorMatchController::class, 'update']
         )->name('color-matches.update');
+
+        Route::get('/orders', [OrderController::class, 'index'])
+            ->name('orders.index');
+
+     Route::patch('/orders/{order}/toggle-status', [OrderController::class, 'toggleStatus'])
+    ->name('orders.toggle-status');
+
+        Route::get('/orders/{order}', [OrderController::class, 'showAdmin'])
+            ->name('orders.show');
     });

@@ -135,4 +135,33 @@ class OrderController extends Controller
 
         return response()->json(['ok' => true]);
     }
+
+    public function index()
+    {
+        $orders = Order::with(['user', 'items'])
+            ->latest()
+            ->paginate(12);
+
+        return view('admin.orders.index', compact('orders'));
+    }
+
+    public function toggleStatus(Order $order)
+{
+    $order->status = $order->status === 'completed'
+        ? 'pending'
+        : 'completed';
+
+    $order->save();
+
+    return response()->json([
+        'status' => $order->status,
+    ]);
+}
+
+    public function showAdmin(Order $order)
+    {
+        $order->load(['user', 'items.product']);
+
+        return view('admin.orders.show', compact('order'));
+    }
 }
