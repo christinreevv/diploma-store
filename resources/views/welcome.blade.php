@@ -14,24 +14,21 @@
 
     <div class="container mx-auto py-8">
 
-     @php
-$limitedImage = asset('images/placeholder.jpg');
+        @php
+            $limitedImage = asset('images/placeholder.jpg');
 
-if (!empty($limitedProduct)) {
+            if (!empty($limitedProduct)) {
+                $color = $limitedProduct->productColors->first();
 
-    $color = $limitedProduct->productColors->first();
+                $image = $color?->images?->sortByDesc('is_main')->first(function ($img) {
+                    return Storage::disk('public')->exists($img->path);
+                });
 
-    $image = $color?->images
-        ?->sortByDesc('is_main')
-        ->first(function ($img) {
-            return Storage::disk('public')->exists($img->path);
-        });
-
-    if ($image) {
-        $limitedImage = Storage::url($image->path);
-    }
-}
-@endphp
+                if ($image) {
+                    $limitedImage = Storage::url($image->path);
+                }
+            }
+        @endphp
 
         @php
             use Illuminate\Support\Facades\Storage;

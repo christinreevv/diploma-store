@@ -21,8 +21,12 @@
 
                 @foreach ($favorites as $favorite)
                     @php
-                        $product = $favorite->product;
+                         $product = $favorite->product;
                         $color = $favorite->productColor;
+
+                        if (!$product || !$color) {
+                            continue;
+                        }
 
                         $images = $color?->images ?? collect();
                         $image = $images->where('is_main', true)->first() ?? $images->first();
@@ -31,8 +35,8 @@
                         $price = $product->sizes->first()?->pivot->price ?? 0;
 
                         $productUrl = route('products.show', [
-                            'product' => $product->slug,
-                            'color' => $color?->key ?? 'default',
+                            'slug' => $product->slug,
+                            'color' => $color?->color?->code ?? null,
                         ]);
 
                         $inFavorite = true; // на странице избранного все элементы уже в избранном
