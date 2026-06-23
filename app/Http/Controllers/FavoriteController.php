@@ -10,7 +10,7 @@ class FavoriteController extends Controller
     {
         $favorites = auth()->user()
             ->favorites()
-   ->whereHas('product.productColors')
+            ->whereHas('product.productColors')
             ->with([
                 'product.productColors.images',
                 'product.sizes',
