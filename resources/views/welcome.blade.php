@@ -119,9 +119,9 @@
 
             <div class="mt-10 flex justify-center">
 
-              <a href="{{ route('catalog.index') }}" class="catalog-btn">
-    <span>Перейти в каталог</span>
-</a>
+                <a href="{{ route('catalog.index') }}" class="catalog-btn">
+                    <span>Перейти в каталог</span>
+                </a>
 
             </div>
 
@@ -197,10 +197,10 @@
 
                     $price = $product->sizes->first()?->pivot->price ?? 0;
 
-                 $productUrl = route('products.show', [
-    'slug' => $product->slug,
-    'color' => $color?->color?->code,
-]);
+                    $productUrl = route('products.show', [
+                        'slug' => $product->slug,
+                        'color' => $color?->color?->code,
+                    ]);
                 @endphp
 
                 <a href="{{ $productUrl }}" class="shrink-0 w-72">
@@ -230,9 +230,6 @@
         </div>
 
     </div>
-
-
-
 
 
     </div>

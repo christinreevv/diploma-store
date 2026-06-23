@@ -52,241 +52,309 @@
             </div>
 
         </div>
+        <div class="grid grid-cols-3 gap-12 py-8 border-y border-gray-200">
 
-        <div class="bg-white rounded-sm shadow p-6">
+            <div>
+                <p class="text-xs uppercase tracking-[0.25em] text-gray-400">
+                    Всего товаров
+                </p>
 
-            <h3 class="text-lg font-semibold mb-4">
-                Топ товаров
-            </h3>
-
-            <div class="space-y-2">
-
-                @foreach ($topProducts as $item)
-                    <div class="flex justify-between">
-
-                        <span>
-                            {{ $item->product?->title }}
-                        </span>
-
-                        <span class="font-semibold">
-                            {{ $item->total }} шт.
-                        </span>
-
-                    </div>
-                @endforeach
-
+                <p class="text-4xl font-light text-gray-900 mt-3">
+                    {{ $products->total() }}
+                </p>
             </div>
 
-        </div>
+            <div>
+                <p class="text-xs uppercase tracking-[0.25em] text-gray-400">
+                    Активные
+                </p>
 
-        <div class="bg-white rounded-sm shadow p-6">
-
-            <h3 class="text-lg font-semibold mb-4">
-                Популярные цвета
-            </h3>
-
-            <div class="space-y-2">
-
-                @foreach ($topColors as $item)
-                    <div class="flex justify-between">
-
-                        <span>
-                            {{ $item->color?->title }}
-                        </span>
-
-                        <span class="font-semibold">
-                            {{ $item->total }} заказов
-                        </span>
-
-                    </div>
-                @endforeach
-
-            </div>
-
-        </div>
-
-        {{-- KPI --}}
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-
-            <div class="bg-white p-6 rounded-sm shadow">
-                <p class="text-gray-500 text-sm">Всего товаров</p>
-                <p class="text-2xl font-semibold">{{ $products->total() }}</p>
-            </div>
-
-            <div class="bg-white p-6 rounded-sm shadow">
-                <p class="text-gray-500 text-sm">Активные</p>
-                <p class="text-2xl font-semibold">
+                <p class="text-4xl font-light text-gray-900 mt-3">
                     {{ $products->where('is_active', true)->count() }}
                 </p>
             </div>
 
-            <div class="bg-white p-6 rounded-sm shadow">
-                <p class="text-gray-500 text-sm">Скрытые</p>
-                <p class="text-2xl font-semibold">
+            <div>
+                <p class="text-xs uppercase tracking-[0.25em] text-gray-400">
+                    Скрытые
+                </p>
+
+                <p class="text-4xl font-light text-gray-900 mt-3">
                     {{ $products->where('is_active', false)->count() }}
                 </p>
             </div>
 
         </div>
+        <div class="">
 
-        {{-- TABLE --}}
-        <div class="bg-white shadow rounded-sm overflow-hidden">
+            <div class="mb-6">
+                <h3 class="text-2xl font-light">
+                    Топ товаров
+                </h3>
+            </div>
 
-            <table class="min-w-full text-sm">
+            <div class="flex gap-6 overflow-x-auto pb-4">
 
-                <thead class="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider">
-                    <tr>
-                        <th class="px-4 py-3 text-left">№</th>
-                        <th class="px-4 py-3 text-left">Фото</th>
-                        <th class="px-4 py-3 text-left">Название</th>
-                        <th class="px-4 py-3 text-left">Цена</th>
-                        <th class="px-4 py-3 text-left">Категория</th>
-                        <th class="px-4 py-3 text-left">Статус</th>
-                        <th class="px-4 py-3 text-center">Действия</th>
-                    </tr>
-                </thead>
+                @foreach ($topProducts as $item)
+                    @php
+                        $product = $item->product;
 
-                <tbody class="divide-y divide-gray-100">
+                        if (!$product) {
+                            continue;
+                        }
 
-                    @forelse ($products as $product)
-                        @php
-                            $mainImage = $product->images->where('is_main', true)->first() ?? $product->images->first();
+                        $color = $product->productColors->first();
 
-                            $minPrice = $product->sizes->min(fn($size) => $size->pivot->price);
-                        @endphp
+                        $images = $color?->images ?? collect();
 
-                        <tr class="hover:bg-gray-50 transition">
+                        $image = $images->where('is_main', true)->first() ?? $images->first();
 
-                            {{-- НУМЕРАЦИЯ С 1 --}}
-                            <td class="px-4 py-3 text-gray-900 font-medium">
-                                {{ $products->firstItem() + $loop->index }}
-                            </td>
+                        $imageUrl = $image ? Storage::url($image->path) : asset('images/placeholder.jpg');
 
-                            {{-- IMAGE --}}
-                            <td class="px-4 py-3">
-                                @if ($mainImage)
-                                    <img src="{{ asset('storage/' . $mainImage->path) }}"
-                                        class="w-14 h-18 object-cover rounded-sm">
-                                @else
-                                    <div
-                                        class="w-14 h-18 bg-gray-200 flex items-center justify-center text-xs text-gray-500">
-                                        —
-                                    </div>
-                                @endif
-                            </td>
+                        $price = $product->sizes->first()?->pivot->price ?? 0;
+                    @endphp
 
-                            {{-- TITLE --}}
-                            <td class="px-4 py-3 font-medium text-gray-900">
+                    <a href="{{ route('products.show', $product->slug) }}" class="shrink-0 w-64 block group">
+
+                        <div class="aspect-[3/4] overflow-hidden rounded-sm bg-gray-100">
+
+                            <img src="{{ $imageUrl }}" alt="{{ $product->title }}"
+                                class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+
+                        </div>
+
+                        <div class="mt-3">
+
+                            <h4 class="font-medium text-gray-900 truncate">
                                 {{ $product->title }}
-                            </td>
+                            </h4>
 
-                            {{-- PRICE --}}
-                            <td class="px-4 py-3 text-gray-700">
-                                {{ $minPrice ? number_format($minPrice, 0, '', ' ') . ' ₽' : '—' }}
-                            </td>
+                            <div class="flex items-center justify-between mt-2">
 
-                            {{-- CATEGORY --}}
-                            <td class="px-4 py-3 text-gray-600">
-                                {{ $product->category?->title ?? '—' }}
-                            </td>
+                                <span class="text-gray-700">
+                                    {{ number_format($price, 0, ',', ' ') }} ₽
+                                </span>
 
-                            {{-- STATUS --}}
-                            <td class="px-4 py-3">
-                                <form action="{{ route('admin.products.toggle-status', $product) }}" method="POST">
-                                    @csrf
-                                    @method('PATCH')
+                                <span class="text-xs px-2 py-1 rounded-full bg-black text-white">
+                                    {{ $item->total }} шт.
+                                </span>
 
-                                    <button type="submit"
-                                        class="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900">
+                            </div>
 
-                                        <span
-                                            class="w-2 h-2 rounded-full
-                {{ $product->is_active ? 'bg-gray-700' : 'bg-gray-300' }}"></span>
+                        </div>
 
-                                        {{ $product->is_active ? 'Активен' : 'Скрыт' }}
-
-                                    </button>
-                                </form>
-                            </td>
-
-                            {{-- ACTIONS --}}
-                            <td class="px-4 py-3 text-center space-x-3">
-
-                                <a href="{{ route('products.show', $product->slug) }}"
-                                    class="text-blue-600 hover:underline">
-                                    Смотреть
-                                </a>
-
-                                <a href="{{ route('admin.products.edit', $product) }}"
-                                    class="text-yellow-600 hover:underline">
-                                    Редактировать
-                                </a>
-
-                                <form action="{{ route('admin.products.destroy', $product) }}" method="POST"
-                                    class="inline">
-                                    @csrf
-                                    @method('DELETE')
-
-                                    <button type="submit" onclick="return confirm('Удалить товар?')"
-                                        class="text-red-600 hover:underline">
-                                        Удалить
-                                    </button>
-
-                                </form>
-
-                            </td>
-
-                        </tr>
-
-                    @empty
-
-                        <tr>
-                            <td colspan="7" class="px-4 py-10 text-center text-gray-400">
-                                Товары не найдены
-                            </td>
-                        </tr>
-                    @endforelse
-
-                </tbody>
-            </table>
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-
-                <div class="bg-white p-6 rounded-sm shadow">
-                    <p class="text-gray-500 text-sm">Выручка</p>
-                    <p class="text-2xl font-semibold">
-                        {{ number_format($totalRevenue, 0, '', ' ') }} ₽
-                    </p>
-                </div>
-
-                <div class="bg-white p-6 rounded-sm shadow">
-                    <p class="text-gray-500 text-sm">Заказов</p>
-                    <p class="text-2xl font-semibold">
-                        {{ $totalOrders }}
-                    </p>
-                </div>
-
-                <div class="bg-white p-6 rounded-sm shadow">
-                    <p class="text-gray-500 text-sm">Продано товаров</p>
-                    <p class="text-2xl font-semibold">
-                        {{ $totalSold }}
-                    </p>
-                </div>
-
-                <div class="bg-white p-6 rounded-sm shadow">
-                    <p class="text-gray-500 text-sm">Средний чек</p>
-                    <p class="text-2xl font-semibold">
-                        {{ $totalOrders ? number_format($totalRevenue / $totalOrders, 0, '', ' ') : 0 }} ₽
-                    </p>
-                </div>
+                    </a>
+                @endforeach
 
             </div>
+
         </div>
 
-        {{-- PAGINATION --}}
-        <div class="mt-6">
-            {{ $products->links() }}
-        </div>
 
+        {{-- TABLE --}}
+   <div class="border border-gray-200 overflow-hidden">
+
+    <table class="w-full">
+
+        <thead class="border-b border-gray-200 bg-gray-50">
+
+            <tr class="text-xs uppercase tracking-[0.15em] text-gray-500">
+
+                <th class="px-6 py-4 text-left font-medium">№</th>
+                <th class="px-6 py-4 text-left font-medium">Фото</th>
+                <th class="px-6 py-4 text-left font-medium">Название</th>
+                <th class="px-6 py-4 text-left font-medium">Цена</th>
+                <th class="px-6 py-4 text-left font-medium">Категория</th>
+                <th class="px-6 py-4 text-left font-medium">Статус</th>
+                <th class="px-6 py-4 text-right font-medium">Действия</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            @forelse ($products as $product)
+
+                @php
+                    $mainImage = $product->images->where('is_main', true)->first() ?? $product->images->first();
+
+                    $minPrice = $product->sizes->min(fn($size) => $size->pivot->price);
+                @endphp
+
+                <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+
+                    {{-- ID --}}
+                    <td class="px-6 py-5 text-gray-400 text-sm">
+                        {{ $products->firstItem() + $loop->index }}
+                    </td>
+
+                    {{-- IMAGE --}}
+                    <td class="px-6 py-5">
+
+                        @if ($mainImage)
+                            <img src="{{ asset('storage/' . $mainImage->path) }}"
+                                class="w-14 h-20 object-cover">
+                        @else
+                            <div class="w-14 h-20 bg-gray-100 flex items-center justify-center text-gray-400 text-xs">
+                                —
+                            </div>
+                        @endif
+
+                    </td>
+
+                    {{-- TITLE --}}
+                    <td class="px-6 py-5">
+
+                        <div class="font-medium text-gray-900">
+                            {{ $product->title }}
+                        </div>
+
+                    </td>
+
+                    {{-- PRICE --}}
+                    <td class="px-6 py-5 font-medium text-gray-900">
+
+                        {{ $minPrice ? number_format($minPrice, 0, '', ' ') . ' ₽' : '—' }}
+
+                    </td>
+
+                    {{-- CATEGORY --}}
+                    <td class="px-6 py-5 text-gray-600">
+
+                        {{ $product->category?->title ?? '—' }}
+
+                    </td>
+
+                    {{-- STATUS --}}
+                    <td class="px-6 py-5">
+
+                        <form action="{{ route('admin.products.toggle-status', $product) }}" method="POST">
+                            @csrf
+                            @method('PATCH')
+
+                            <button type="submit"
+                                class="inline-flex items-center gap-2 text-sm">
+
+                                <span
+                                    class="w-2 h-2 rounded-full
+                                    {{ $product->is_active ? 'bg-green-500' : 'bg-gray-300' }}">
+                                </span>
+
+                                <span class="text-gray-700">
+                                    {{ $product->is_active ? 'Активен' : 'Скрыт' }}
+                                </span>
+
+                            </button>
+
+                        </form>
+
+                    </td>
+
+                    {{-- ACTIONS --}}
+                    <td class="px-6 py-5">
+
+                        <div class="flex justify-end items-center gap-5 text-sm">
+
+                            <a href="{{ route('products.show', $product->slug) }}"
+                                class="text-gray-500 hover:text-black transition">
+                                Смотреть
+                            </a>
+
+                            <a href="{{ route('admin.products.edit', $product) }}"
+                                class="text-gray-500 hover:text-black transition">
+                                Изменить
+                            </a>
+
+                            <form action="{{ route('admin.products.destroy', $product) }}"
+                                method="POST"
+                                class="inline">
+                                @csrf
+                                @method('DELETE')
+
+                                <button type="submit"
+                                    onclick="return confirm('Удалить товар?')"
+                                    class="text-red-500 hover:text-red-700 transition">
+                                    Удалить
+                                </button>
+                            </form>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            @empty
+
+                <tr>
+                    <td colspan="7" class="py-20 text-center text-gray-400">
+                        Товары не найдены
+                    </td>
+                </tr>
+
+            @endforelse
+
+        </tbody>
+
+    </table>
+
+<div class="border-t border-gray-200">
+    {{ $products->links() }}
+</div>
+
+</div>
+       <div class="grid grid-cols-2 lg:grid-cols-4 gap-8 py-6 border-y border-gray-200">
+
+    <div>
+        <p class="text-xs uppercase tracking-[0.15em] text-gray-400">
+            Выручка
+        </p>
+
+        <p class="mt-3 text-4xl font-light text-gray-900">
+            {{ number_format($totalRevenue, 0, '', ' ') }}
+        </p>
+
+        <span class="text-sm text-gray-500">
+            ₽
+        </span>
+    </div>
+
+    <div>
+        <p class="text-xs uppercase tracking-[0.15em] text-gray-400">
+            Заказов
+        </p>
+
+        <p class="mt-3 text-4xl font-light text-gray-900">
+            {{ $totalOrders }}
+        </p>
+    </div>
+
+    <div>
+        <p class="text-xs uppercase tracking-[0.15em] text-gray-400">
+            Продано товаров
+        </p>
+
+        <p class="mt-3 text-4xl font-light text-gray-900">
+            {{ $totalSold }}
+        </p>
+    </div>
+
+    <div>
+        <p class="text-xs uppercase tracking-[0.15em] text-gray-400">
+            Средний чек
+        </p>
+
+        <p class="mt-3 text-4xl font-light text-gray-900">
+            {{ $totalOrders ? number_format($totalRevenue / $totalOrders, 0, '', ' ') : 0 }}
+        </p>
+
+        <span class="text-sm text-gray-500">
+            ₽
+        </span>
+    </div>
+
+</div>
     </div>
 
 @endsection
