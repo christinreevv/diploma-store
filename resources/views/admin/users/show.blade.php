@@ -22,8 +22,7 @@
         {{-- Аватар --}}
         <div class="flex-shrink-0">
             @if ($user->avatar)
-                <img src="{{ asset('storage/' . $user->avatar) }}"
-                    alt="{{ $user->name }}"
+                <img src="{{ asset('storage/' . $user->avatar) }}" alt="{{ $user->name }}"
                     class="w-32 h-32 rounded-full object-cover">
             @else
                 <div
@@ -86,7 +85,6 @@
             <div class="space-y-4">
 
                 @foreach ($user->orders->sortByDesc('created_at') as $order)
-
                     <div
                         class="bg-white shadow rounded-lg p-4 flex flex-col md:flex-row justify-between items-start md:items-center space-y-2 md:space-y-0">
 
@@ -110,12 +108,7 @@
 
                             <p class="font-medium text-lg">
 
-                                {{ number_format(
-                                    $order->items->sum(fn($item) => $item->price * $item->quantity),
-                                    0,
-                                    ',',
-                                    ' ',
-                                ) }}
+                                {{ number_format($order->items->sum(fn($item) => $item->price * $item->quantity), 0, ',', ' ') }}
 
                                 ₽
 
@@ -129,13 +122,10 @@
                         </div>
 
                     </div>
-
                 @endforeach
 
             </div>
-
         @else
-
             <p class="text-gray-500">
                 У пользователя пока нет заказов.
             </p>

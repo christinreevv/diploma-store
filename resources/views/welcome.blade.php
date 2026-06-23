@@ -14,27 +14,36 @@
 
     <div class="container mx-auto py-8">
 
+     @php
+$limitedImage = asset('images/placeholder.jpg');
+
+if (!empty($limitedProduct)) {
+
+    $color = $limitedProduct->productColors->first();
+
+    $image = $color?->images
+        ?->sortByDesc('is_main')
+        ->first(function ($img) {
+            return Storage::disk('public')->exists($img->path);
+        });
+
+    if ($image) {
+        $limitedImage = Storage::url($image->path);
+    }
+}
+@endphp
+
         @php
-            $limitedImage = asset('images/placeholder.jpg');
+            use Illuminate\Support\Facades\Storage;
 
-            if (!empty($limitedProduct)) {
-                $color = $limitedProduct->productColors->first();
-
-                $image = $color?->images?->where('is_main', true)->first() ?? $color?->images?->first();
-
-                if ($image) {
-                    $limitedImage = Storage::url($image->path);
-                }
-            }
-        @endphp
-
-        @php
             $newImage = asset('images/placeholder.jpg');
 
             if (!empty($newProduct)) {
                 $color = $newProduct->productColors->first();
 
-                $image = $color?->images?->where('is_main', true)->first() ?? $color?->images?->first();
+                $image = $color?->images?->sortByDesc('is_main')->first(function ($img) {
+                    return Storage::disk('public')->exists($img->path);
+                });
 
                 if ($image) {
                     $newImage = Storage::url($image->path);
