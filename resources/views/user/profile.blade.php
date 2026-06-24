@@ -54,7 +54,8 @@
             </div>
 
             @if (auth()->check() && auth()->user()->role === 'admin')
-                <a href="{{ route('admin.products.index') }}" class="text-black hover:underline font-medium mt-6 inline-block">
+                <a href="{{ route('admin.products.index') }}"
+                    class="text-black hover:underline font-medium mt-6 inline-block">
                     Перейти в админ-панель
                 </a>
             @endif
@@ -77,7 +78,7 @@
                     <div
                         class="bg-white shadow rounded-lg p-4 flex flex-col md:flex-row justify-between items-start md:items-center space-y-2 md:space-y-0">
                         <div class="flex-1">
-                            <p class="font-medium">Заказ #{{ $order->id }}</p>
+                            <p class="font-medium">Заказ #{{ $loop->iteration }}</p>
                             <p class="text-sm text-gray-500">Дата: {{ $order->created_at->format('d.m.Y H:i') }}</p>
                             <p class="text-sm text-gray-500">
                                 Статус: {{ $order->status }}
