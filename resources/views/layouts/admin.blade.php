@@ -173,7 +173,7 @@
                 {{-- Каталог --}}
                 <div>
                     <h4 class="font-medium mb-4">
-                        Каталог
+                        REVERIE
                     </h4>
 
                     <ul class="space-y-2 text-gray-600">
