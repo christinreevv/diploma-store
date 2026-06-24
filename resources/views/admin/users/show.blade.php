@@ -1,5 +1,9 @@
 @extends('layouts.admin')
 
+@php
+    $sortedOrders = $user->orders->sortByDesc('created_at')->values();
+@endphp
+
 @section('title', $user->name)
 
 @section('breadcrumbs')
@@ -84,14 +88,14 @@
 
             <div class="space-y-4">
 
-                @foreach ($user->orders->sortByDesc('created_at') as $order)
+                @foreach ($sortedOrders as $order)
                     <div
                         class="bg-white shadow rounded-lg p-4 flex flex-col md:flex-row justify-between items-start md:items-center space-y-2 md:space-y-0">
 
                         <div class="flex-1">
 
                             <p class="font-medium">
-                                Заказ #{{ $order->id }}
+                             Заказ #{{ $loop->iteration }}
                             </p>
 
                             <p class="text-sm text-gray-500">

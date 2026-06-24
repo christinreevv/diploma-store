@@ -57,7 +57,7 @@
 
                         <div>
                             <p class="text-xs uppercase tracking-wider text-gray-400">
-                                Пользователь #{{ $u->id }}
+                               Пользователь #{{ $users->firstItem() + $loop->index }}
                             </p>
 
                             <h3 class="mt-2 text-lg font-medium text-gray-900 group-hover:text-black transition">
@@ -105,7 +105,7 @@
                     <div class="px-5 py-4 border-t border-gray-100 flex items-center justify-between">
 
                         <span class="text-xs text-gray-400">
-                            ID: {{ $u->id }}
+                          № {{ $users->firstItem() + $loop->index }}
                         </span>
 
                         <a href="{{ route('admin.users.show', $u) }}"

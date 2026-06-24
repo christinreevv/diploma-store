@@ -10,7 +10,7 @@
     <div class="flex items-start justify-between">
         <div>
             <h1 class="text-3xl font-light text-gray-900">
-                Заказ #{{ $order->id }}
+                Заказ #{{ $orders->firstItem() + $loop->index }}
             </h1>
 
             <p class="text-gray-500 mt-1">
