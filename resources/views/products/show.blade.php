@@ -152,7 +152,7 @@
 
                     @foreach ([
             'details' => 'Детали',
-            'care' => 'Уход',
+            'care_instructions' => 'Уход',
         ] as $id => $label)
                         <div class="border-b border-gray-100 pb-3">
 
@@ -175,7 +175,7 @@
 
                                     @if ($id == 'details')
                                         {!! nl2br(e($product->description ?? 'Описание временно недоступно.')) !!}
-                                    @elseif($id == 'care_instuctions')
+                                    @elseif($id == 'care_instructions')
                                         Информация по уходу за изделием появится позже.
                                     @endif
 
