@@ -37,7 +37,7 @@
 
                         <div>
                             <p class="text-xs uppercase tracking-wider text-gray-400">
-                                Заказ #{{ $order->id }}
+                              Заказ #{{ $orders->firstItem() + $loop->index }}
                             </p>
 
                             <p class="text-sm text-gray-500 mt-1">
@@ -91,9 +91,9 @@
                             Открыть
                         </a>
 
-                        <span class="text-xs text-gray-400">
-                            ID: {{ $order->id }}
-                        </span>
+                       <span class="text-xs text-gray-400">
+    № {{ $orders->firstItem() + $loop->index }}
+</span>
 
                     </div>
 
