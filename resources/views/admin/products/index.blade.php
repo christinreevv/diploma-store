@@ -264,17 +264,15 @@
 
                         <div class="flex items-start justify-between gap-3">
 
-                            <div>
+                          <div class="min-w-0 flex-1">
+    <div class="text-xs uppercase tracking-wider text-gray-400">
+        #{{ $products->firstItem() + $loop->index }}
+    </div>
 
-                                <div class="text-xs uppercase tracking-wider text-gray-400">
-                                    #{{ $products->firstItem() + $loop->index }}
-                                </div>
-
-                                <h3 class="mt-1 text-lg font-medium text-gray-900">
-                                    {{ $product->title }}
-                                </h3>
-
-                            </div>
+    <h3 class="mt-1 text-lg font-medium text-gray-900 leading-6 line-clamp-2 h-12 overflow-hidden">
+        {{ $product->title }}
+    </h3>
+</div>
 
                            <button
     type="button"
