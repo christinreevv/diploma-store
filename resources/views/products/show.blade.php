@@ -177,12 +177,8 @@
 
                                     @if ($id == 'details')
                                         {!! nl2br(e($product->description ?? 'Описание временно недоступно.')) !!}
-                                    @elseif($id == 'care')
+                                    @elseif($id == 'care_instuctions')
                                         Информация по уходу за изделием появится позже.
-                                    @elseif($id == 'delivery')
-                                        Детали доставки уточняйте при оформлении заказа.
-                                    @elseif($id == 'ask')
-                                        Вы можете задать вопрос через форму обратной связи.
                                     @endif
 
                                 </div>
