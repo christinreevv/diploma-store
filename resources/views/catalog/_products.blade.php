@@ -5,7 +5,7 @@
 <main>
     {{-- Продукты --}}
     @if ($products->count())
-        <div data-products-grid class="grid grid-cols-2 lg:grid-cols-5 gap-4 lg:gap-6">
+<div data-products-grid class="grid grid-cols-1 md:grid-cols-3 gap-8">
             @foreach ($products as $product)
                 @php
                     $colorVariants = $product->productColors;

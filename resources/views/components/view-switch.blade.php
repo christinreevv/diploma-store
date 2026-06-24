@@ -11,19 +11,19 @@
     </button>
 
     {{-- 3x3 --}}
-  <button onclick="setView(3)"
-    class="p-2 border border-gray-300 hover:bg-black hover:text-white transition hidden lg:flex items-center justify-center">
+    <button onclick="setView(3)"
+        class="p-2 border border-gray-300 hover:bg-black hover:text-white transition hidden lg:flex items-center justify-center">
 
-    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
 
-        <rect x="4" y="4" width="6" height="6" />
-        <rect x="14" y="4" width="6" height="6" />
-        <rect x="4" y="14" width="6" height="6" />
-        <rect x="14" y="14" width="6" height="6" />
+            <rect x="4" y="4" width="6" height="6" />
+            <rect x="14" y="4" width="6" height="6" />
+            <rect x="4" y="14" width="6" height="6" />
+            <rect x="14" y="14" width="6" height="6" />
 
-    </svg>
+        </svg>
 
-</button>
+    </button>
 
     {{-- 5 колонок --}}
     <button onclick="setView(5)"

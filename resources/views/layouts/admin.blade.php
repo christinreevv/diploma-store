@@ -44,8 +44,7 @@
                         <a href="{{ route('admin.users.index') }}" class="text-[16px] hover:text-red-600 transition">
                             Пользователи
                         </a>
-                        <a href="{{ route('admin.orders.index') }}"
-                           class="text-[16px] hover:text-red-600 transition">
+                        <a href="{{ route('admin.orders.index') }}" class="text-[16px] hover:text-red-600 transition">
                             Заказы
                         </a>
                     @endif
@@ -73,8 +72,6 @@
                         <a href="{{ route('cart.index') }}">
                             <img src="{{ asset('cart.png') }}" class="w-6 h-6 hover:opacity-80 transition">
                         </a>
-
-
                     @endif
                 @endauth
 
@@ -122,7 +119,7 @@
                     @if (auth()->user()->role === 'admin')
                         <a href="{{ route('admin.products.index') }}">Товары</a>
                         <a href="{{ route('admin.users.index') }}">Пользователи</a>
-                          <a href="{{ route('admin.orders.index') }}">Пользователи</a>
+                        <a href="{{ route('admin.orders.index') }}">Пользователи</a>
                     @endif
 
                     <form action="{{ route('logout') }}" method="POST">
@@ -259,7 +256,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     @stack('scripts')
-
     <script>
         function setView(size) {
 
@@ -278,6 +274,10 @@
                 grid.className = 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6';
             }
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setView(3);
+        });
     </script>
 
 </body>
