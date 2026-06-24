@@ -132,64 +132,63 @@
                 @if ($order->payment_status !== 'paid')
                     @if ($order->payment_status !== 'paid')
                         <a href="{{ route('checkout.payment', $order) }}"
-                            class="block w-full text-center bg-gray-900 text-white py-3 rounded-sm hover:bg-gray-800 transition">
+                            class="block w-full text-center bg-gray-900 text-white py-3 rounded-sm hover:bg-gray-800 transition mb-5">
                             Перейти к оплате
                         </a>
                     @endif
                 @endif
-            </div>
 
-            <div class="space-y-4 text-sm">
+                <div class="space-y-4 text-sm">
 
-                <div class="flex justify-between">
-                    <span class="text-gray-500">Номер заказа</span>
-                    <span class="text-gray-800">#{{ $order->id }}</span>
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">Номер заказа</span>
+                        <span class="text-gray-800">#{{ $order->id }}</span>
+                    </div>
+
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">Дата</span>
+                        <span class="text-gray-800">
+                            {{ $order->created_at->format('d.m.Y') }}
+                        </span>
+                    </div>
+
+                    @if ($order->delivery_address)
+                        <div>
+                            <p class="text-gray-500 mb-1">
+                                Адрес доставки
+                            </p>
+
+                            <p class="text-gray-800">
+                                {{ $order->delivery_address }}
+                            </p>
+                        </div>
+                    @endif
+
+                    @if ($order->payment_method)
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Оплата</span>
+
+                            <span class="text-gray-800">
+                                {{ $order->payment_method === 'cash' ? 'Наличные' : 'Карта' }}
+                            </span>
+                        </div>
+                    @endif
+
                 </div>
 
-                <div class="flex justify-between">
-                    <span class="text-gray-500">Дата</span>
-                    <span class="text-gray-800">
-                        {{ $order->created_at->format('d.m.Y') }}
+                <div class="border-t mt-6 pt-6 flex justify-between items-center">
+                    <span class="text-lg font-medium">
+                        Итого
+                    </span>
+
+                    <span class="text-xl font-semibold text-gray-900">
+                        {{ number_format($order->items->sum(fn($i) => $i->price * $i->quantity), 0, '', ' ') }} ₽
                     </span>
                 </div>
 
-                @if ($order->delivery_address)
-                    <div>
-                        <p class="text-gray-500 mb-1">
-                            Адрес доставки
-                        </p>
-
-                        <p class="text-gray-800">
-                            {{ $order->delivery_address }}
-                        </p>
-                    </div>
-                @endif
-
-                @if ($order->payment_method)
-                    <div class="flex justify-between">
-                        <span class="text-gray-500">Оплата</span>
-
-                        <span class="text-gray-800">
-                            {{ $order->payment_method === 'cash' ? 'Наличные' : 'Карта' }}
-                        </span>
-                    </div>
-                @endif
-
-            </div>
-
-            <div class="border-t mt-6 pt-6 flex justify-between items-center">
-                <span class="text-lg font-medium">
-                    Итого
-                </span>
-
-                <span class="text-xl font-semibold text-gray-900">
-                    {{ number_format($order->items->sum(fn($i) => $i->price * $i->quantity), 0, '', ' ') }} ₽
-                </span>
             </div>
 
         </div>
-
-    </div>
 
     </div>
 @endsection
