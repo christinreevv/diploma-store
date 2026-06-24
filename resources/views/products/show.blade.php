@@ -165,7 +165,6 @@
                                 <span>{{ $label }}</span>
 
                                 <div class="flex items-center gap-2">
-                                    <span class="accordion-check text-green-600 hidden text-sm">✓</span>
                                     <span class="accordion-icon text-sm transition-transform duration-300">˅</span>
                                 </div>
 
@@ -341,7 +340,6 @@
                     if (!content) return;
 
                     const icon = button.querySelector('.accordion-icon');
-                    const check = button.querySelector('.accordion-check');
 
                     const isOpen = content.style.maxHeight &&
                         content.style.maxHeight !== '0px';
@@ -355,10 +353,6 @@
                         item.style.transform = 'rotate(0deg)';
                     });
 
-                    document.querySelectorAll('.accordion-check').forEach(item => {
-                        item.classList.add('hidden');
-                    });
-
                     // если был закрыт — открыть
                     if (!isOpen) {
                         content.style.maxHeight = content.scrollHeight + 'px';
@@ -367,9 +361,6 @@
                             icon.style.transform = 'rotate(180deg)';
                         }
 
-                        if (check) {
-                            check.classList.remove('hidden');
-                        }
                     }
 
                 });
