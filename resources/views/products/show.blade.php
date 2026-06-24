@@ -176,7 +176,7 @@
                                     @if ($id == 'details')
                                         {!! nl2br(e($product->description ?? 'Описание временно недоступно.')) !!}
                                     @elseif($id == 'care_instructions')
-                                        Информация по уходу за изделием появится позже.
+                                        {!! nl2br(e($product->care_instructions ?? ' Информация по уходу за изделием появится позже.')) !!}
                                     @endif
 
                                 </div>
