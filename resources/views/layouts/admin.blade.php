@@ -161,7 +161,7 @@
                 {{-- Бренд --}}
                 <div>
                     <h3 class="text-2xl font-light mb-4">
-                        STORE
+                        REVERIE
                     </h3>
 
                     <p class="text-gray-600 leading-relaxed">
@@ -173,7 +173,7 @@
                 {{-- Каталог --}}
                 <div>
                     <h4 class="font-medium mb-4">
-                        REVERIE
+                        Каталог
                     </h4>
 
                     <ul class="space-y-2 text-gray-600">
