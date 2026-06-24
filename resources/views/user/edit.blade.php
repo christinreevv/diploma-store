@@ -30,7 +30,7 @@
                         {{ strtoupper(substr($user->name, 0, 1)) }}
                     @endif
                     <input type="file" name="avatar" class="hidden" accept="image/*" onchange="this.form.submit()">
-                  
+
                 </label>
                 @error('avatar')
                     <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
@@ -53,7 +53,7 @@
 
             {{-- Ссылка на админ-панель --}}
             @if(auth()->check() && auth()->user()->role === 'admin')
-                <a href="{{ route('admin.dashboard') }}"
+                <a href="{{ route('admin.products.index') }}"
                    class="self-start text-black font-medium hover:underline mt-4">
                    Перейти в админ-панель
                 </a>
