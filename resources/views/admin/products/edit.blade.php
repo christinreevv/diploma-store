@@ -208,38 +208,64 @@
                     });
                 </script>
 
- <div class="mb-8">
+                <div class="mb-8">
 
-                        <label class="block text-gray-500 mb-3 font-medium">
-                            Особенности товара
-                        </label>
+                    <label class="block text-gray-500 mb-3 font-medium">
+                        Особенности товара
+                    </label>
 
-                        <label id="limitedBox" class="cursor-pointer block border rounded-lg p-4 bg-white transition">
+                    <label id="limitedBox" class="cursor-pointer block border rounded-lg p-4 bg-white transition">
 
-                            <input type="checkbox" name="is_limited" value="1" id="is_limited" class="hidden"
-                                {{ old('is_limited') ? 'checked' : '' }}>
+                        <input type="checkbox" name="is_limited" value="1" id="is_limited" class="hidden"
+                            {{ old('is_limited') ? 'checked' : '' }}>
 
-                            <div class="flex items-start justify-between">
+                        <div class="flex items-start justify-between">
 
-                                <div>
-                                    <div class="font-medium">
-                                        Лимитированная коллекция
-                                    </div>
-
-                                    <div class="text-sm text-gray-500 mt-1">
-                                        Товар будет отмечаться как эксклюзивный
-                                    </div>
+                            <div>
+                                <div class="font-medium">
+                                    Лимитированная коллекция
                                 </div>
 
-                                <div id="checkIcon" class="text-xl opacity-0 transition">
-                                    ✓
+                                <div class="text-sm text-gray-500 mt-1">
+                                    Товар будет отмечаться как эксклюзивный
                                 </div>
-
                             </div>
 
-                        </label>
+                            <div id="checkIcon" class="text-xl opacity-0 transition">
+                                ✓
+                            </div>
 
-                    </div>
+                        </div>
+
+                    </label>
+
+                </div>
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+
+                        const checkbox = document.getElementById('is_limited');
+                        const box = document.getElementById('limitedBox');
+                        const icon = document.getElementById('checkIcon');
+
+                        function updateUI() {
+                            if (checkbox.checked) {
+                                box.classList.add('bg-gray-100', 'border-black');
+                                icon.classList.add('opacity-100');
+                                icon.classList.remove('opacity-0');
+                            } else {
+                                box.classList.remove('bg-gray-100', 'border-black');
+                                icon.classList.add('opacity-0');
+                                icon.classList.remove('opacity-100');
+                            }
+                        }
+
+                        checkbox.addEventListener('change', updateUI);
+
+                        updateUI(); // при загрузке
+                    });
+                </script>
+
 
                 {{-- Количество и цена --}}
                 <div class="row mb-3">
