@@ -5,7 +5,7 @@
 <main>
     {{-- Продукты --}}
     @if ($products->count())
-<div data-products-grid class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div data-products-grid class="grid grid-cols-1 md:grid-cols-3 gap-8">
             @foreach ($products as $product)
                 @php
                     $colorVariants = $product->productColors;
@@ -59,14 +59,14 @@
                         <div class="pt-3 flex items-start justify-between gap-3">
 
                             <div class="flex flex-col text-left">
-    <h5 class="text-sm lg:text-base font-normal text-gray-900 leading-snug tracking-wide">
-        {{ $product->title }}
-    </h5>
+                                <h5 class="text-sm lg:text-base font-normal text-gray-900 leading-snug tracking-wide">
+                                    {{ $product->title }}
+                                </h5>
 
-    <p class="mt-1 text-sm lg:text-base text-gray-500 font-light tracking-wide">
-        {{ number_format($price, 0, ',', ' ') }} ₽
-    </p>
-</div>
+                                <p class="mt-1 text-sm lg:text-base text-gray-500 font-light tracking-wide">
+                                    {{ number_format($price, 0, ',', ' ') }} ₽
+                                </p>
+                            </div>
 
                             {{-- Избранное --}}
                             <form method="POST" action="{{ route('favorites.toggle', $color->id) }}">

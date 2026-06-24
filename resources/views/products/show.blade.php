@@ -259,8 +259,7 @@
 
                 </div>
 
-               <div id="recommended-slider"
-     class="flex gap-6 overflow-x-auto pb-4 cursor-grab select-none">
+                <div id="recommended-slider" class="flex gap-6 overflow-x-auto pb-4 cursor-grab select-none">
 
                     @foreach ($recommendedProducts as $item)
                         @php
@@ -328,6 +327,57 @@
     opacity-0 translate-y-2 pointer-events-none
     transition-all duration-300">
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            document.querySelectorAll('.accordion-btn').forEach(button => {
+
+                button.addEventListener('click', () => {
+
+                    const targetId = button.dataset.target;
+                    const content = document.getElementById(targetId);
+
+                    if (!content) return;
+
+                    const icon = button.querySelector('.accordion-icon');
+                    const check = button.querySelector('.accordion-check');
+
+                    const isOpen = content.style.maxHeight &&
+                        content.style.maxHeight !== '0px';
+
+                    // закрыть все остальные
+                    document.querySelectorAll('.accordion-content').forEach(item => {
+                        item.style.maxHeight = null;
+                    });
+
+                    document.querySelectorAll('.accordion-icon').forEach(item => {
+                        item.style.transform = 'rotate(0deg)';
+                    });
+
+                    document.querySelectorAll('.accordion-check').forEach(item => {
+                        item.classList.add('hidden');
+                    });
+
+                    // если был закрыт — открыть
+                    if (!isOpen) {
+                        content.style.maxHeight = content.scrollHeight + 'px';
+
+                        if (icon) {
+                            icon.style.transform = 'rotate(180deg)';
+                        }
+
+                        if (check) {
+                            check.classList.remove('hidden');
+                        }
+                    }
+
+                });
+
+            });
+
+        });
+    </script>
 
     <script>
         const imagesByColor = @json($imagesByColor);
@@ -486,49 +536,47 @@
 
             updateArrows();
         });
-
-
     </script>
 
     <script>
-document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', () => {
 
-    const slider = document.getElementById('recommended-slider');
+            const slider = document.getElementById('recommended-slider');
 
-    if (!slider) return;
+            if (!slider) return;
 
-    let isDown = false;
-    let startX;
-    let scrollLeft;
+            let isDown = false;
+            let startX;
+            let scrollLeft;
 
-    slider.addEventListener('mousedown', (e) => {
-        isDown = true;
-        startX = e.pageX - slider.offsetLeft;
-        scrollLeft = slider.scrollLeft;
-    });
+            slider.addEventListener('mousedown', (e) => {
+                isDown = true;
+                startX = e.pageX - slider.offsetLeft;
+                scrollLeft = slider.scrollLeft;
+            });
 
-    slider.addEventListener('mouseleave', () => {
-        isDown = false;
-    });
+            slider.addEventListener('mouseleave', () => {
+                isDown = false;
+            });
 
-    slider.addEventListener('mouseup', () => {
-        isDown = false;
-    });
+            slider.addEventListener('mouseup', () => {
+                isDown = false;
+            });
 
-    slider.addEventListener('mousemove', (e) => {
+            slider.addEventListener('mousemove', (e) => {
 
-        if (!isDown) return;
+                if (!isDown) return;
 
-        e.preventDefault();
+                e.preventDefault();
 
-        const x = e.pageX - slider.offsetLeft;
-        const walk = (x - startX) * 2;
+                const x = e.pageX - slider.offsetLeft;
+                const walk = (x - startX) * 2;
 
-        slider.scrollLeft = scrollLeft - walk;
-    });
+                slider.scrollLeft = scrollLeft - walk;
+            });
 
-});
-</script>
+        });
+    </script>
 
 
 
