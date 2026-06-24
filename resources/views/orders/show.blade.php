@@ -1,11 +1,14 @@
 @extends('layouts.admin')
-
+@php
+    $sortedOrders = $order->user->orders->sortByDesc('created_at')->values();
+    $orderNumber = $sortedOrders->search(fn($item) => $item->id === $order->id) + 1;
+@endphp
 @section('breadcrumbs')
     @php
         $breadcrumbs = [
             ['label' => 'Главная', 'url' => url('/')],
             ['label' => 'Заказы', 'url' => route('profile.show')],
-['label' => 'Заказ #' . $orderNumber, 'url' => '#'],
+            ['label' => 'Заказ #' . $orderNumber, 'url' => '#'],
         ];
     @endphp
 
@@ -15,16 +18,13 @@
 @section('content')
     <div class="container mx-auto py-10">
 
-        @php
-    $sortedOrders = $order->user->orders->sortByDesc('created_at')->values();
-    $orderNumber = $sortedOrders->search(fn($item) => $item->id === $order->id) + 1;
-@endphp
+
 
         {{-- HEADER --}}
         <div class="flex items-center justify-between mb-8">
             <div>
                 <h1 class="text-2xl font-medium text-gray-800">
-Заказ #{{ $orderNumber }}
+                    Заказ #{{ $orderNumber }}
                 </h1>
 
                 <p class="text-sm text-gray-500 mt-1">
@@ -147,7 +147,7 @@
 
                     <div class="flex justify-between">
                         <span class="text-gray-500">Номер заказа</span>
-                    <span class="text-gray-800">#{{ $orderNumber }}</span>
+                        <span class="text-gray-800">#{{ $orderNumber }}</span>
                     </div>
 
                     <div class="flex justify-between">
