@@ -153,8 +153,6 @@
                     @foreach ([
             'details' => 'Детали',
             'care' => 'Уход',
-            'delivery' => 'Доставка',
-            'ask' => 'Задать вопрос',
         ] as $id => $label)
                         <div class="border-b border-gray-100 pb-3">
 
