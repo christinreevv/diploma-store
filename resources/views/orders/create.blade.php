@@ -82,7 +82,7 @@
             </div>
 
             {{-- RIGHT: SUMMARY --}}
-            <div class="bg-white border rounded-sm p-6">
+            <div class="bg-white border rounded-sm p-6 h-fit">
 
                 <h2 class="text-lg font-medium mb-4">Ваш заказ</h2>
 
