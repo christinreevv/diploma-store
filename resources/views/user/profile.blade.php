@@ -120,8 +120,7 @@
                 </p>
 
                 {{-- CTA --}}
-                <a href="{{ route('cart.index') }}"
-                    class="inline-flex items-center gap-2 px-6 py-3 bg-black text-white rounded-sm hover:bg-gray-800 transition">
+                <a href="{{ route('cart.index') }}" class="catalog-btn">
 
                     <img src="{{ asset('cart.png') }}" class="w-5 h-5" alt="cart">
 
