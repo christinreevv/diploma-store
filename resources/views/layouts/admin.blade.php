@@ -125,10 +125,11 @@
 
                 @if (!auth()->check() || auth()->user()->role === 'user')
                     <a class="u-nav" href="{{ route('catalog.index') }}">Каталог</a>
-                    <a class="u-nav" href="{{ route('cart.index') }}">Корзина</a>
                 @endif
 
                 @auth
+
+                    <a class="u-nav" href="{{ route('cart.index') }}">Корзина</a>
                     @if (auth()->user()->role === 'admin')
                         <a href="{{ route('admin.products.index') }}">Товары</a>
                         <a href="{{ route('admin.users.index') }}">Пользователи</a>
@@ -293,20 +294,20 @@
         });
     </script>
 
- <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
 
-        const items = document.querySelectorAll('.fade-in');
+            const items = document.querySelectorAll('.fade-in');
 
-        items.forEach((el, i) => {
+            items.forEach((el, i) => {
 
-            setTimeout(() => {
-                el.classList.add('show');
-            }, i * 60); // мягкий каскад
+                setTimeout(() => {
+                    el.classList.add('show');
+                }, i * 60); // мягкий каскад
+            });
+
         });
-
-    });
-</script>
+    </script>
 
 </body>
 
