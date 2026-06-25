@@ -132,7 +132,7 @@
                     @if (auth()->user()->role === 'admin')
                         <a href="{{ route('admin.products.index') }}">Товары</a>
                         <a href="{{ route('admin.users.index') }}">Пользователи</a>
-                        <a href="{{ route('admin.orders.index') }}">Пользователи</a>
+                        <a href="{{ route('admin.orders.index') }}">Заказы</a>
                     @endif
 
                     <form action="{{ route('logout') }}" method="POST">
