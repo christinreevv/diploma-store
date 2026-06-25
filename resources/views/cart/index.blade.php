@@ -183,18 +183,19 @@
 
                 {{-- TITLE --}}
                 <h2 class="text-2xl font-semibold text-gray-800 mb-2">
-                    У вас пока нет заказов
+                    Ваша корзина пуста
                 </h2>
 
                 {{-- TEXT --}}
                 <p class="text-gray-500 max-w-md mb-6">
-                    Оформите первый заказ.
+                    Вы ещё не добавили товары в корзину.
+                </p>
 
                 {{-- CTA --}}
                 <div class="mt-2 flex justify-center">
 
-                    <a href="{{ route('cart.index') }}" class="catalog-btn">
-                        <span>Перейти в корзину</span>
+                    <a href="{{ route('catalog.index') }}" class="catalog-btn">
+                        <span>Перейти в каталог</span>
                     </a>
 
                 </div>
