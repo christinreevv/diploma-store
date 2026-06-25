@@ -2,7 +2,9 @@
 
 @section('title', 'Заказ #' . $order->id)
 
-
+@php
+    $sortedOrders = $user->orders->sortByDesc('created_at')->values();
+@endphp
 @php
     $orderNumber = $order->id; // или лучше бизнес-номер ниже
 @endphp
@@ -12,29 +14,35 @@
     <div class="container mx-auto py-10 space-y-10">
 
         {{-- HEADER --}}
-        <div class="flex items-start justify-between">
-            <div>
-                <h1 class="text-3xl font-light text-gray-900">
-                   Заказ #{{ $orderNumber }}
-                </h1>
+        @foreach ($sortedOrders as $index => $order)
+            <div class="bg-white shadow rounded-lg p-4 flex justify-between items-center">
 
-                <p class="text-gray-500 mt-1">
-                    {{ $order->created_at->format('d.m.Y H:i') }}
-                </p>
+                <div>
+                    <p class="font-medium">
+                        Заказ #{{ $index + 1 }}
+                    </p>
+
+                    <p class="text-sm text-gray-500">
+                        {{ $order->created_at->format('d.m.Y H:i') }}
+                    </p>
+
+                    <p class="text-sm text-gray-500">
+                        Статус: {{ $order->status }}
+                    </p>
+                </div>
+
+                <div class="text-right">
+                    <p class="font-medium text-lg">
+                        {{ number_format($order->items->sum(fn($item) => $item->price * $item->quantity), 0, ',', ' ') }} ₽
+                    </p>
+
+                    <a href="{{ route('admin.orders.show', $order) }}" class="text-sm text-gray-500 hover:text-black">
+                        Просмотр
+                    </a>
+                </div>
+
             </div>
-
-            {{-- STATUS BADGE --}}
-            <div class="flex items-center gap-2 px-3 py-1 border border-gray-200 text-sm">
-                <span
-                    class="w-2 h-2 rounded-full
-                {{ $order->status === 'completed' ? 'bg-green-500' : 'bg-gray-300' }}">
-                </span>
-
-                <span class="text-gray-700">
-                    {{ $order->status }}
-                </span>
-            </div>
-        </div>
+        @endforeach
 
         {{-- INFO --}}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
