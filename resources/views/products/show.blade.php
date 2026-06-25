@@ -411,6 +411,14 @@
             form?.addEventListener('submit', async (e) => {
                 e.preventDefault();
 
+                // 🔒 ЕСЛИ ГОСТЬ — редирект на логин
+                const isAuth = @json(auth()->check());
+
+                if (!isAuth) {
+                    window.location.href = "{{ route('login') }}";
+                    return;
+                }
+
                 const size = document.getElementById('sizeInput')?.value;
 
                 if (!size) {
