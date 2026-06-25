@@ -47,6 +47,19 @@
                         class="w-full p-3 border border-gray-300 rounded-sm focus:border-black outline-none transition">
                 </div>
 
+                {{-- ======== СОГЛАСИЕ ======== --}}
+                <div>
+                    <label class="flex items-start gap-3 text-sm text-gray-700 leading-5 cursor-pointer">
+                        <input type="checkbox" name="privacy_agreement" required
+                            class="mt-1 h-4 w-4 border border-gray-300 rounded-sm text-black focus:ring-0 focus:outline-none">
+
+                        <span>
+                            Я даю согласие на обработку моих персональных данных и принимаю условия
+                            пользовательского соглашения.
+                        </span>
+                    </label>
+                </div>
+
                 {{-- ======== КНОПКА ======== --}}
                 <button type="submit" class="py-3 px-6 bg-black text-white rounded-sm hover:opacity-85 transition text-lg">
                     Зарегистрироваться

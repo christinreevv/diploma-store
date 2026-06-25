@@ -46,7 +46,9 @@ Route::view('/delivery', 'footer.delivery.index')
 
 Route::view('/payment', 'footer.payment.index')
     ->name('payment');
-
+    
+Route::view('/privacy', 'footer.privacy.index')
+    ->name('privacy');
 // ---------------------- защищённые маршруты ----------------------
 
 // Корзина (для авторизованных)
@@ -83,8 +85,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/checkout/payment/{order}', [OrderController::class, 'paymentPage'])
         ->name('checkout.payment');
-    Route::view('/privacy', 'footer.privacy.index')
-        ->name('privacy');
+
 });
 
 // Админка (только для админа)
@@ -154,8 +155,8 @@ Route::prefix('admin')
         Route::get('/orders', [OrderController::class, 'index'])
             ->name('orders.index');
 
-     Route::patch('/orders/{order}/toggle-status', [OrderController::class, 'toggleStatus'])
-    ->name('orders.toggle-status');
+        Route::patch('/orders/{order}/toggle-status', [OrderController::class, 'toggleStatus'])
+            ->name('orders.toggle-status');
 
         Route::get('/orders/{order}', [OrderController::class, 'showAdmin'])
             ->name('orders.show');
