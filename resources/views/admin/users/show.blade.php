@@ -118,12 +118,9 @@
 
                             </p>
 
-                            <a href="{{ route('admin.users.show', [
-                                'user' => $u->id,
-                                'number' => $users->firstItem() + $loop->index,
-                            ]) }}"
+                            <a href="{{ route('admin.orders.show', $order) }}"
                                 class="text-sm text-gray-500 hover:text-black transition">
-                                Открыть
+                                Просмотр
                             </a>
 
                         </div>
