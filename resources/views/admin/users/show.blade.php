@@ -1,6 +1,12 @@
 @extends('layouts.admin')
 
 @php
+    $sortedOrders = $user->orders->sortByDesc('created_at')->values();
+
+    $allOrderIds = \App\Models\Order::orderBy('created_at')->pluck('id');
+@endphp
+
+@php
     $allOrderIds = \App\Models\Order::orderBy('created_at')->pluck('id');
 @endphp
 
