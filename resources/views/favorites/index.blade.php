@@ -113,12 +113,11 @@
                 {{-- TEXT --}}
                 <p class="text-gray-500 max-w-md mb-6">
                     Вы пока не добавили ни одного товара в избранное.
-                    Самое время выбрать что-то красивое 💫
                 </p>
 
                 {{-- CTA --}}
                 <a href="{{ route('catalog.index') }}"
-                    class="inline-flex items-center gap-2 px-6 py-3 bg-black text-white rounded-sm hover:bg-gray-800 transition">
+                    class="inline-flex items-center gap-2 px-6 py-3 bg-black text-white rounded-sm hover:bg-gray-800 transition catalog-btn">
 
                     Перейти в каталог
 
