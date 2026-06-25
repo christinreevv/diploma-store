@@ -12,7 +12,7 @@
 
                 {{-- ======== EMAIL ======== --}}
                 <div>
-                    <label for="email" class="block mb-1 font-medium">Введите e-mail:</label>
+                    <label for="email" class="block mb-1 font-regular">Введите e-mail:</label>
                     <input type="email" name="email" id="email" value="{{ old('email') }}" required autofocus
                         class="w-full p-3 border border-gray-300 rounded-sm focus:border-black outline-none transition" placeholder="ekaterinasokolova@example.ru">
                     @error('email')
@@ -22,7 +22,7 @@
 
                 {{-- ======== ПАРОЛЬ ======== --}}
                 <div>
-                    <label for="password" class="block mb-1 font-medium">Введите пароль:</label>
+                    <label for="password" class="block mb-1 font-regular">Введите пароль:</label>
                     <input type="password" name="password" id="password" required
                         class="w-full p-3 border border-gray-300 rounded-sm focus:border-black outline-none transition">
                     @error('password')

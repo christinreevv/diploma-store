@@ -12,7 +12,7 @@
 
                 {{-- ======== ИМЯ ======== --}}
                 <div>
-                    <label class="block mb-1 font-medium">Введите имя:</label>
+                    <label class="block mb-1 font-regular">Введите имя:</label>
                     <input type="text" name="name" value="{{ old('name') }}" required
                         class="w-full p-3 border border-gray-300 rounded-sm focus:border-black outline-none transition" placeholder="Екатерина Иванова">
                     @error('name')
@@ -22,7 +22,7 @@
 
                 {{-- ======== EMAIL ======== --}}
                 <div class="relative">
-                    <label class="block mb-1 font-medium">Введите e-mail:</label>
+                    <label class="block mb-1 font-regular">Введите e-mail:</label>
                     <input type="email" name="email" value="{{ old('email') }}" required
                         class="w-full p-3 border border-gray-300 rounded-sm focus:border-black outline-none transition" placeholder="ekaterinasokolova@example.ru">
                     @error('email')
@@ -32,7 +32,7 @@
 
                 {{-- ======== ПАРОЛЬ ======== --}}
                 <div>
-                    <label class="block mb-1 font-medium">Придумайте пароль:</label>
+                    <label class="block mb-1 font-regular">Придумайте пароль:</label>
                     <input type="password" name="password" required
                         class="w-full p-3 border border-gray-300 rounded-sm focus:border-black outline-none transition">
                     @error('password')
@@ -42,7 +42,7 @@
 
                 {{-- ======== ПОДТВЕРЖДЕНИЕ ПАРОЛЯ ======== --}}
                 <div>
-                    <label class="block mb-1 font-medium">Повторите пароль:</label>
+                    <label class="block mb-1 font-regular">Повторите пароль:</label>
                     <input type="password" name="password_confirmation" required
                         class="w-full p-3 border border-gray-300 rounded-sm focus:border-black outline-none transition">
                 </div>
