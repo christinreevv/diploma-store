@@ -7,7 +7,7 @@
         $breadcrumbs = [
             ['label' => 'Главная', 'url' => url('/')],
             ['label' => 'Каталог', 'url' => route('catalog.index')],
-            ['label' => $product->title, 'url' => '#'],
+            ['label' => \Illuminate\Support\Str::limit($product->title, 24), 'url' => '#'],
         ];
     @endphp
     <x-breadcrumbs :items="$breadcrumbs" />
