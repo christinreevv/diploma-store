@@ -11,7 +11,7 @@
             <div>
                 <h1 class="text-3xl font-light text-gray-900">
                     <h1 class="text-3xl font-light text-gray-900">
-                        Заказ #{{ $order->id }}
+                        Заказ #{{ request('number', $order->id) }}
                     </h1>
                 </h1>
 

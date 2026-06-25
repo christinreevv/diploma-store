@@ -37,7 +37,7 @@
 
                         <div>
                             <p class="text-xs uppercase tracking-wider text-gray-400">
-                              Заказ #{{ $orders->firstItem() + $loop->index }}
+                                Заказ #{{ $orders->firstItem() + $loop->index }}
                             </p>
 
                             <p class="text-sm text-gray-500 mt-1">
@@ -86,14 +86,14 @@
                     {{-- BOTTOM --}}
                     <div class="px-5 py-4 border-t border-gray-100 flex items-center justify-between">
 
-                        <a href="{{ route('admin.orders.show', $order) }}"
+                        <a href="{{ route('admin.orders.show', ['order' => $order->id, 'number' => $orders->firstItem() + $loop->index]) }}"
                             class="text-sm text-gray-500 hover:text-black transition">
                             Открыть
                         </a>
 
-                       <span class="text-xs text-gray-400">
-    № {{ $orders->firstItem() + $loop->index }}
-</span>
+                        <span class="text-xs text-gray-400">
+                            № {{ $orders->firstItem() + $loop->index }}
+                        </span>
 
                     </div>
 
