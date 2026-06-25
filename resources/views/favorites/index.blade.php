@@ -21,7 +21,7 @@
 
                 @foreach ($favorites as $favorite)
                     @php
-                         $product = $favorite->product;
+                        $product = $favorite->product;
                         $color = $favorite->productColor;
 
                         if (!$product || !$color) {
@@ -91,8 +91,47 @@
                 {{ $favorites->links() }}
             </div>
         @else
-            <p class="text-gray-500 text-center">У вас пока нет избранных товаров</p>
-        @endif
+            <div class="flex flex-col items-center justify-center text-center py-24 px-6">
+
+                {{-- ICON --}}
+                <div class="w-20 h-20 mb-6 rounded-full bg-gray-100 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-gray-400" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+                        2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09
+                        C13.09 3.81 14.76 3 16.5 3
+                        19.58 3 22 5.42 22 8.5
+                        c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                    </svg>
+                </div>
+
+                {{-- TITLE --}}
+                <h2 class="text-2xl font-semibold text-gray-800 mb-2">
+                    Ваш список избранного пуст
+                </h2>
+
+                {{-- TEXT --}}
+                <p class="text-gray-500 max-w-md mb-6">
+                    Вы пока не добавили ни одного товара в избранное.
+                    Самое время выбрать что-то красивое 💫
+                </p>
+
+                {{-- CTA --}}
+                <a href="{{ route('catalog.index') }}"
+                    class="inline-flex items-center gap-2 px-6 py-3 bg-black text-white rounded-sm hover:bg-gray-800 transition">
+
+                    Перейти в каталог
+
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+
+                </a>
+
+            </div>
+            @endelse
 
     </div>
 @endsection
