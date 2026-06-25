@@ -20,30 +20,15 @@
 </head>
 
 <style>
-    body {
-        opacity: 0;
-        transform: scale(0.98);
-        filter: blur(6px);
-        transition: opacity 0.6s ease, transform 0.6s ease, filter 0.6s ease;
-    }
-
-    body.page-ready {
-        opacity: 1;
-        transform: scale(1);
-        filter: blur(0);
-    }
-
     .fade-in {
         opacity: 0;
-        transform: translateY(24px);
-        animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        transform: translateY(10px);
+        transition: opacity .45s ease, transform .45s ease;
     }
 
-    @keyframes fadeInUp {
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+    .fade-in.show {
+        opacity: 1;
+        transform: translateY(0);
     }
 </style>
 
@@ -308,17 +293,16 @@
         });
     </script>
 
-   <script>
-    window.addEventListener('DOMContentLoaded', () => {
-
-        requestAnimationFrame(() => {
-            document.body.classList.add('page-ready');
-        });
+ <script>
+    document.addEventListener('DOMContentLoaded', () => {
 
         const items = document.querySelectorAll('.fade-in');
 
         items.forEach((el, i) => {
-            el.style.animationDelay = (i * 0.08) + 's';
+
+            setTimeout(() => {
+                el.classList.add('show');
+            }, i * 60); // мягкий каскад
         });
 
     });
