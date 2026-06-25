@@ -154,7 +154,7 @@
 
     <footer class="mt-24 border-t border-gray-200">
 
-        <div class="container mx-auto py-16">
+        <div class="container mx-auto pt-16">
 
             <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
 
@@ -242,7 +242,7 @@
             </div>
 
             <div
-                class="border-t border-gray-200 mt-12 pt-8 flex-col md:flex-row text text-center text-sm text-gray-500">
+                class="border-t border-gray-200 mt-12 pt-8 flex-col md:flex-row text text-center text-sm text-gray-500 pb-8">
 
                 <p>
                     © {{ date('Y') }} REVERIE. Все права защищены.
