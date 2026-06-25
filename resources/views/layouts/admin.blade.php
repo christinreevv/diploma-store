@@ -19,7 +19,7 @@
     @stack('styles')
 </head>
 
-<body class="bg-light">
+<body class="bg-light min-h-screen flex flex-col">
 
     <header class="bg-white sticky top-0 z-50">
         <div class="container mx-auto px-6 py-3 flex justify-between items-center relative">
@@ -148,9 +148,9 @@
     @yield('breadcrumbs')
 
 
-    <main class="container">
-        @yield('content')
-    </main>
+   <main class="container flex-1">
+    @yield('content')
+</main>
 
     <footer class="mt-24 border-t border-gray-200">
 
