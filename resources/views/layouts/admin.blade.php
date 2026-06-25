@@ -19,6 +19,30 @@
     @stack('styles')
 </head>
 
+<style>
+    body {
+        opacity: 0;
+        transition: opacity .35s ease;
+    }
+
+    body.page-ready {
+        opacity: 1;
+    }
+
+    .fade-in {
+        opacity: 0;
+        transform: translateY(12px);
+        animation: fadeInUp .5s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
 <body class="bg-light min-h-screen flex flex-col">
 
     <header class="bg-white sticky top-0 z-50">
@@ -148,9 +172,9 @@
     @yield('breadcrumbs')
 
 
-   <main class="container flex-1">
-    @yield('content')
-</main>
+    <main class="container flex-1 fade-in">
+        @yield('content')
+    </main>
 
     <footer class="mt-24 border-t border-gray-200">
 
@@ -277,6 +301,19 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             setView(3);
+        });
+    </script>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            document.body.classList.add('page-ready');
+
+            // плавное появление элементов с задержкой
+            const items = document.querySelectorAll('.fade-in');
+
+            items.forEach((el, i) => {
+                el.style.animationDelay = (i * 0.05) + 's';
+            });
         });
     </script>
 
