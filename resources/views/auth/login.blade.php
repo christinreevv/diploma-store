@@ -5,7 +5,7 @@
 @section('content')
     <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-90 to-gray-200 p-4">
         <div class="w-full max-w-md backdrop-blur p-8">
-            <h1 class="text-3xl text-center font-light tracking-tight text-gray-600 mb-20">
+            <h1 class="text-3xl text-center font-light tracking-tight text-gray-600 mb-16">
                 Авторизация
             </h1>
 
