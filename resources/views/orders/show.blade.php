@@ -1,7 +1,6 @@
 @extends('layouts.admin')
 @php
-    $sortedOrders = $order->user->orders->sortByDesc('created_at')->values();
-    $orderNumber = $sortedOrders->search(fn($item) => $item->id === $order->id) + 1;
+    $orderNumber = request('number', $order->id);
 @endphp
 @section('breadcrumbs')
     @php

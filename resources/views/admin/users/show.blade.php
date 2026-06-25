@@ -95,7 +95,7 @@
                         <div class="flex-1">
 
                             <p class="font-medium">
-                             Заказ #{{ $loop->iteration }}
+                                Заказ #{{ $loop->iteration }}
                             </p>
 
                             <p class="text-sm text-gray-500">
@@ -118,9 +118,12 @@
 
                             </p>
 
-                            <a href="{{ route('admin.orders.show', $order) }}"
-                                class="text-blue-600 hover:underline text-sm">
-                                Просмотр
+                            <a href="{{ route('admin.users.show', [
+                                'user' => $u->id,
+                                'number' => $users->firstItem() + $loop->index,
+                            ]) }}"
+                                class="text-sm text-gray-500 hover:text-black transition">
+                                Открыть
                             </a>
 
                         </div>

@@ -89,8 +89,10 @@
                                 {{ number_format($order->items->sum(fn($item) => $item->price * $item->quantity), 0, ',', ' ') }}
                                 ₽
                             </p>
-                            <a href="{{ route('orders.show', $order->id) }}"
-                                class="text-blue-600 hover:underline text-sm">Просмотр</a>
+                            <a href="{{ route('orders.show', ['order' => $order->id, 'number' => $loop->iteration]) }}"
+                                class="text-blue-600 hover:underline text-sm">
+                                Просмотр
+                            </a>
                         </div>
                     </div>
                 @endforeach
