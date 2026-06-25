@@ -182,7 +182,7 @@
                 </div>
 
                 {{-- TITLE --}}
-                <h2 class="text-2xl font-semibold text-gray-800 mb-2">
+                <h2 class="text-2xl font-regular text-gray-800 mb-2">
                     Ваша корзина пуста
                 </h2>
 
