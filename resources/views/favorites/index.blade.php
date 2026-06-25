@@ -131,7 +131,7 @@
                 </a>
 
             </div>
-            @endelse
+            @endif
 
     </div>
 @endsection
