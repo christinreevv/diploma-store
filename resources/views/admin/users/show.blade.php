@@ -95,7 +95,7 @@
                         <div class="flex-1">
 
                             <p class="font-medium">
-                                Заказ #{{ $loop->iteration }}
+                                Заказ #{{ $sortedOrders->count() - $loop->index }}
                             </p>
 
                             <p class="text-sm text-gray-500">

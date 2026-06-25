@@ -2,6 +2,8 @@
 
 @section('title', 'Пользователи')
 
+
+
 @section('breadcrumbs')
     @php
         $breadcrumbs = [['label' => 'Главная', 'url' => url('/')], ['label' => 'Пользователи', 'url' => '#']];
