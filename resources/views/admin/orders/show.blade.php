@@ -6,12 +6,9 @@
 
     <div class="container mx-auto py-10 space-y-10">
 
-        {{-- HEADER --}}
-        @php
-            $sortedOrders = $user->orders->sortByDesc('created_at')->values();
-        @endphp
 
-        @foreach ($sortedOrders as $index => $userOrder)
+
+    @foreach ($order->user?->orders->sortByDesc('created_at') ?? [] as $index => $userOrder)
             <div class="bg-white shadow rounded-lg p-4 flex justify-between items-center">
 
                 <div>
