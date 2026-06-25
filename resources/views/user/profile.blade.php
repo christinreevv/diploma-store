@@ -70,7 +70,10 @@
 
     {{-- Блок заказов --}}
     <div class="container p-6 mx-auto mt-12">
-        <h2 class="text-2xl font-semibold mb-6">Мои заказы</h2>
+
+        <h1 class="text-3xl font-light tracking-tight text-gray-600 mb-10">
+            Мои заказы
+        </h1>
 
         @if ($user->orders->count())
             <div class="space-y-4">
@@ -106,7 +109,7 @@
                 </div>
 
                 {{-- TITLE --}}
-                <h2 class="text-2xl font-semibold text-gray-800 mb-2">
+                <h2 class="text-2xl font-regular text-gray-800 mb-2">
                     У вас пока нет заказов
                 </h2>
 
