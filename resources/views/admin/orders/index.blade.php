@@ -37,7 +37,7 @@
 
                         <div>
                             <p class="text-xs uppercase tracking-wider text-gray-400">
-                             Заказ #{{ ($orders->currentPage() - 1) * $orders->perPage() + $loop->iteration }}
+                          Заказ #{{ $loop->iteration }}
                             </p>
 
                             <p class="text-sm text-gray-500 mt-1">

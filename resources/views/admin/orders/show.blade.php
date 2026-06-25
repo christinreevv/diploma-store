@@ -14,35 +14,35 @@
     <div class="container mx-auto py-10 space-y-10">
 
         {{-- HEADER --}}
-        @foreach ($sortedOrders as $index => $order)
-            <div class="bg-white shadow rounded-lg p-4 flex justify-between items-center">
+       @foreach ($sortedOrders as $index => $userOrder)
+    <div class="bg-white shadow rounded-lg p-4 flex justify-between items-center">
 
-                <div>
-                    <p class="font-medium">
-                        Заказ #{{ $index + 1 }}
-                    </p>
+        <div>
+            <p class="font-medium">
+                Заказ #{{ $index + 1 }}
+            </p>
 
-                    <p class="text-sm text-gray-500">
-                        {{ $order->created_at->format('d.m.Y H:i') }}
-                    </p>
+            <p class="text-sm text-gray-500">
+                {{ $userOrder->created_at->format('d.m.Y H:i') }}
+            </p>
 
-                    <p class="text-sm text-gray-500">
-                        Статус: {{ $order->status }}
-                    </p>
-                </div>
+            <p class="text-sm text-gray-500">
+                Статус: {{ $userOrder->status }}
+            </p>
+        </div>
 
-                <div class="text-right">
-                    <p class="font-medium text-lg">
-                        {{ number_format($order->items->sum(fn($item) => $item->price * $item->quantity), 0, ',', ' ') }} ₽
-                    </p>
+        <div class="text-right">
+            <p class="font-medium text-lg">
+                {{ number_format($userOrder->items->sum(fn($item) => $item->price * $item->quantity), 0, ',', ' ') }} ₽
+            </p>
 
-                    <a href="{{ route('admin.orders.show', $order) }}" class="text-sm text-gray-500 hover:text-black">
-                        Просмотр
-                    </a>
-                </div>
+            <a href="{{ route('admin.orders.show', $userOrder) }}" class="text-sm text-gray-500 hover:text-black">
+                Просмотр
+            </a>
+        </div>
 
-            </div>
-        @endforeach
+    </div>
+@endforeach
 
         {{-- INFO --}}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
