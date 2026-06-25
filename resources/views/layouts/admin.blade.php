@@ -22,17 +22,21 @@
 <style>
     body {
         opacity: 0;
-        transition: opacity .35s ease;
+        transform: scale(0.98);
+        filter: blur(6px);
+        transition: opacity 0.6s ease, transform 0.6s ease, filter 0.6s ease;
     }
 
     body.page-ready {
         opacity: 1;
+        transform: scale(1);
+        filter: blur(0);
     }
 
     .fade-in {
         opacity: 0;
-        transform: translateY(12px);
-        animation: fadeInUp .5s ease forwards;
+        transform: translateY(24px);
+        animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
     @keyframes fadeInUp {
@@ -304,18 +308,21 @@
         });
     </script>
 
-    <script>
-        window.addEventListener('DOMContentLoaded', () => {
+   <script>
+    window.addEventListener('DOMContentLoaded', () => {
+
+        requestAnimationFrame(() => {
             document.body.classList.add('page-ready');
-
-            // плавное появление элементов с задержкой
-            const items = document.querySelectorAll('.fade-in');
-
-            items.forEach((el, i) => {
-                el.style.animationDelay = (i * 0.05) + 's';
-            });
         });
-    </script>
+
+        const items = document.querySelectorAll('.fade-in');
+
+        items.forEach((el, i) => {
+            el.style.animationDelay = (i * 0.08) + 's';
+        });
+
+    });
+</script>
 
 </body>
 
