@@ -13,7 +13,7 @@
 
                 <div>
                     <p class="font-medium">
-                        Заказ #{{ $index + 1 }}
+                      Заказ #{{ $loop->iteration }}
                     </p>
 
                     <p class="text-sm text-gray-500">
