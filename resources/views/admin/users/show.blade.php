@@ -4,10 +4,6 @@
     $allOrderIds = \App\Models\Order::orderBy('created_at')->pluck('id');
 @endphp
 
-@php
-    $orderNumber = $allOrderIds->search($order->id) + 1;
-@endphp
-
 @section('title', $user->name)
 
 @section('breadcrumbs')
@@ -98,13 +94,14 @@
 
                         <div class="flex-1">
 
-@php
-    $orderNumber = $allOrderIds->search($order->id) + 1;
-@endphp
 
-<p class="font-medium">
-    Заказ #{{ $orderNumber }}
-</p>
+                            @php
+                                $orderNumber = $allOrderIds->search($order->id) + 1;
+                            @endphp
+
+                            <p class="font-medium">
+                                Заказ #{{ $orderNumber }}
+                            </p>
 
                             <p class="text-sm text-gray-500">
                                 Дата: {{ $order->created_at->format('d.m.Y H:i') }}
