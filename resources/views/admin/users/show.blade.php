@@ -1,12 +1,11 @@
 @extends('layouts.admin')
 
 @php
-    use App\Models\Order;
+    $allOrderIds = \App\Models\Order::orderBy('created_at')->pluck('id');
+@endphp
 
-    $sortedOrders = $user->orders->sortByDesc('created_at')->values();
-
-    // Все заказы в том же порядке, как на странице заказов
-    $allOrderIds = Order::orderByDesc('created_at')->pluck('id')->values();
+@php
+    $orderNumber = $allOrderIds->search($order->id) + 1;
 @endphp
 
 @section('title', $user->name)
