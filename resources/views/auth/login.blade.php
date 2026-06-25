@@ -5,7 +5,9 @@
 @section('content')
     <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-90 to-gray-200 p-4">
         <div class="w-full max-w-md backdrop-blur p-8">
-            <h1 class="text-3xl font-medium mb-6 text-center text-gray-800">Вход в аккаунт</h1>
+            <h1 class="text-3xl font-light tracking-tight text-gray-600 mb-10">
+                Авторизация
+            </h1>
 
             <form method="POST" action="{{ route('login') }}" class="flex flex-col gap-6 w-full max-w-md mx-auto">
                 @csrf
@@ -14,7 +16,8 @@
                 <div>
                     <label for="email" class="block mb-1 font-regular">Введите e-mail:</label>
                     <input type="email" name="email" id="email" value="{{ old('email') }}" required autofocus
-                        class="w-full p-3 border border-gray-300 rounded-sm focus:border-black outline-none transition" placeholder="ekaterinasokolova@example.ru">
+                        class="w-full p-3 border border-gray-300 rounded-sm focus:border-black outline-none transition"
+                        placeholder="ekaterinasokolova@example.ru">
                     @error('email')
                         <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
                     @enderror

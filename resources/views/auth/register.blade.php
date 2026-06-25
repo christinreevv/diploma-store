@@ -5,7 +5,9 @@
 @section('content')
     <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-90 to-gray-200 p-4">
         <div class="w-full max-w-md backdrop-blur p-8">
-            <h1 class="text-3xl font-medium mb-6 text-center text-gray-800">Регистрация</h1>
+            <h1 class="text-3xl font-light tracking-tight text-gray-600 mb-10">
+                Регистрация
+            </h1>
 
             <form method="POST" action="{{ route('register') }}" class="flex flex-col gap-6 w-full max-w-md mx-auto">
                 @csrf

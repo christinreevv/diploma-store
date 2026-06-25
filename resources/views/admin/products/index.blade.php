@@ -264,32 +264,31 @@
 
                         <div class="flex items-start justify-between gap-3">
 
-                          <div class="min-w-0 flex-1">
-    <div class="text-xs uppercase tracking-wider text-gray-400">
-        #{{ $products->firstItem() + $loop->index }}
-    </div>
+                            <div class="min-w-0 flex-1">
+                                <div class="text-xs uppercase tracking-wider text-gray-400">
+                                    #{{ $products->firstItem() + $loop->index }}
+                                </div>
 
-    <h3 class="mt-1 text-lg font-medium text-gray-900 leading-6 line-clamp-2 h-12 overflow-hidden">
-        {{ $product->title }}
-    </h3>
-</div>
+                                <h3
+                                    class="mt-1 text-lg font-medium text-gray-900 leading-6 line-clamp-2 h-12 overflow-hidden">
+                                    {{ $product->title }}
+                                </h3>
+                            </div>
 
-                           <button
-    type="button"
-    class="flex items-center gap-2 text-xs js-toggle-status"
-    data-id="{{ $product->id }}"
-    data-url="{{ route('admin.products.toggle-status', $product) }}"
->
+                            <button type="button" class="flex items-center gap-2 text-xs js-toggle-status"
+                                data-id="{{ $product->id }}"
+                                data-url="{{ route('admin.products.toggle-status', $product) }}">
 
-    <span class="w-2 h-2 rounded-full status-dot
+                                <span
+                                    class="w-2 h-2 rounded-full status-dot
         {{ $product->is_active ? 'bg-green-500' : 'bg-gray-300' }}">
-    </span>
+                                </span>
 
-    <span class="status-text">
-        {{ $product->is_active ? 'Активен' : 'Скрыт' }}
-    </span>
+                                <span class="status-text">
+                                    {{ $product->is_active ? 'Активен' : 'Скрыт' }}
+                                </span>
 
-</button>
+                            </button>
 
                         </div>
 
@@ -349,46 +348,48 @@
 
     </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function () {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
 
-    document.querySelectorAll('.js-toggle-status').forEach(btn => {
+            document.querySelectorAll('.js-toggle-status').forEach(btn => {
 
-        btn.addEventListener('click', async function () {
+                btn.addEventListener('click', async function() {
 
-            const url = this.dataset.url;
+                    const url = this.dataset.url;
 
-            const res = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ _method: 'PATCH' })
+                    const res = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            _method: 'PATCH'
+                        })
+                    });
+
+                    if (!res.ok) return;
+
+                    const data = await res.json();
+
+                    const dot = this.querySelector('.status-dot');
+                    const text = this.querySelector('.status-text');
+
+                    if (data.is_active) {
+                        dot.classList.remove('bg-gray-300');
+                        dot.classList.add('bg-green-500');
+                        text.textContent = 'Активен';
+                    } else {
+                        dot.classList.remove('bg-green-500');
+                        dot.classList.add('bg-gray-300');
+                        text.textContent = 'Скрыт';
+                    }
+                });
+
             });
 
-            if (!res.ok) return;
-
-            const data = await res.json();
-
-            const dot = this.querySelector('.status-dot');
-            const text = this.querySelector('.status-text');
-
-            if (data.is_active) {
-                dot.classList.remove('bg-gray-300');
-                dot.classList.add('bg-green-500');
-                text.textContent = 'Активен';
-            } else {
-                dot.classList.remove('bg-green-500');
-                dot.classList.add('bg-gray-300');
-                text.textContent = 'Скрыт';
-            }
         });
-
-    });
-
-});
-</script>
+    </script>
 
 @endsection
