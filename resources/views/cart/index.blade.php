@@ -174,7 +174,38 @@
 
             </div>
         @else
-            <p class="text-gray-500">Корзина пустая</p>
+            <div class="flex flex-col items-center justify-center text-center py-24 px-6">
+
+                {{-- ICON --}}
+                <div class="w-20 h-20 mb-6 rounded-full bg-gray-100 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-gray-400" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4z" />
+                    </svg>
+                </div>
+
+                {{-- TITLE --}}
+                <h2 class="text-2xl font-semibold text-gray-800 mb-2">
+                    Ваша корзина пуста
+                </h2>
+
+                {{-- TEXT --}}
+                <p class="text-gray-500 max-w-md mb-6">
+                    Вы ещё не добавили товары в корзину.
+                    Самое время выбрать что-то стильное 🛍️
+                </p>
+
+                {{-- CTA --}}
+                <div class="mt-2 flex justify-center">
+
+                    <a href="{{ route('catalog.index') }}" class="catalog-btn">
+                        <span>Перейти в каталог</span>
+                    </a>
+
+                </div>
+
+            </div>
         @endif
 
     </div>
