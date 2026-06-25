@@ -2,11 +2,9 @@
 
 @section('title', 'Заказ #' . $order->id)
 
-@php
-    use App\Models\Order;
 
-    $allOrderIds = Order::orderBy('created_at')->pluck('id');
-    $orderNumber = $allOrderIds->search($order->id) + 1;
+@php
+    $orderNumber = $order->id; // или лучше бизнес-номер ниже
 @endphp
 
 @section('content')
@@ -17,7 +15,7 @@
         <div class="flex items-start justify-between">
             <div>
                 <h1 class="text-3xl font-light text-gray-900">
-                    Заказ #{{ $orderNumber }}
+                   Заказ #{{ $orderNumber }}
                 </h1>
 
                 <p class="text-gray-500 mt-1">
