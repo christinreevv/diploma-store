@@ -1,7 +1,12 @@
 @extends('layouts.admin')
 
 @php
+    use App\Models\Order;
+
     $sortedOrders = $user->orders->sortByDesc('created_at')->values();
+
+    // Все заказы в том же порядке, как на странице заказов
+    $allOrderIds = Order::orderByDesc('created_at')->pluck('id')->values();
 @endphp
 
 @section('title', $user->name)
@@ -94,9 +99,13 @@
 
                         <div class="flex-1">
 
-                            <p class="font-medium">
-                                Заказ #{{ $sortedOrders->count() - $loop->index }}
-                            </p>
+@php
+    $orderNumber = $allOrderIds->search($order->id) + 1;
+@endphp
+
+<p class="font-medium">
+    Заказ #{{ $orderNumber }}
+</p>
 
                             <p class="text-sm text-gray-500">
                                 Дата: {{ $order->created_at->format('d.m.Y H:i') }}
