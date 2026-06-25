@@ -76,40 +76,42 @@
 
             <div class="space-y-4">
 
-                @foreach ($sortedOrders as $order)
-                    <div class="bg-white shadow rounded-lg p-4 flex justify-between items-center">
+              @foreach ($sortedOrders as $order)
 
-                        <div>
-                            <p class="font-medium">
-                                Заказ #{{ $loop->iteration }}
-                            </p>
+    @php
+        $orderNumber = $allOrderIds->search($order->id) + 1;
+    @endphp
 
-                            <p class="text-sm text-gray-500">
-                                {{ $order->created_at->format('d.m.Y H:i') }}
-                            </p>
+    <div class="bg-white shadow rounded-lg p-4 flex justify-between items-center">
 
-                            <p class="text-sm text-gray-500">
-                                Статус: {{ $order->status }}
-                            </p>
-                        </div>
+        <div>
+            <p class="font-medium">
+                Заказ #{{ $orderNumber }}
+            </p>
 
-                        <div class="text-right">
-                            <p class="font-medium text-lg">
-                                {{ number_format($order->items->sum(fn($item) => $item->price * $item->quantity), 0, ',', ' ') }}
-                                ₽
-                            </p>
+            <p class="text-sm text-gray-500">
+                {{ $order->created_at->format('d.m.Y H:i') }}
+            </p>
 
-                            <a
-                                href="{{ route('admin.orders.show', [
-                                    'order' => $order->id,
-                                    'number' => $orderNumber,
-                                ]) }}">
-                                Просмотр
-                            </a>
-                        </div>
+            <p class="text-sm text-gray-500">
+                Статус: {{ $order->status }}
+            </p>
+        </div>
 
-                    </div>
-                @endforeach
+        <div class="text-right">
+            <p class="font-medium text-lg">
+                {{ number_format($order->items->sum(fn($item) => $item->price * $item->quantity), 0, ',', ' ') }} ₽
+            </p>
+
+            <a href="{{ route('admin.orders.show', $order) }}"
+               class="text-sm text-gray-500 hover:text-black">
+                Просмотр
+            </a>
+        </div>
+
+    </div>
+
+@endforeach
 
             </div>
         @else
