@@ -54,8 +54,10 @@
                             class="mt-1 h-4 w-4 border border-gray-300 rounded-sm text-black focus:ring-0 focus:outline-none">
 
                         <span>
-                            Я даю согласие на обработку моих персональных данных и принимаю условия
-                            пользовательского соглашения.
+                            Я даю согласие на обработку персональных данных и подтверждаю, что ознакомился(ась) с
+                            <a href="{{ route('privacy') }}" class="underline hover:no-underline">
+                                политикой конфиденциальности
+                            </a>.
                         </span>
                     </label>
                 </div>
