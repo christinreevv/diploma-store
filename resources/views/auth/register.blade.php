@@ -12,9 +12,9 @@
 
                 {{-- ======== ИМЯ ======== --}}
                 <div>
-                    <label class="block mb-1 font-medium">Имя</label>
+                    <label class="block mb-1 font-medium">Введите имя:</label>
                     <input type="text" name="name" value="{{ old('name') }}" required
-                        class="w-full p-3 border border-gray-300 rounded-sm focus:border-black outline-none transition">
+                        class="w-full p-3 border border-gray-300 rounded-sm focus:border-black outline-none transition" placeholder="Екатерина Иванова">
                     @error('name')
                         <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
                     @enderror
@@ -22,9 +22,9 @@
 
                 {{-- ======== EMAIL ======== --}}
                 <div class="relative">
-                    <label class="block mb-1 font-medium">E-mail</label>
+                    <label class="block mb-1 font-medium">Введите e-mail:</label>
                     <input type="email" name="email" value="{{ old('email') }}" required
-                        class="w-full p-3 border border-gray-300 rounded-sm focus:border-black outline-none transition">
+                        class="w-full p-3 border border-gray-300 rounded-sm focus:border-black outline-none transition" placeholder="ekaterinasokolova@example.ru">
                     @error('email')
                         <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
                     @enderror
@@ -32,7 +32,7 @@
 
                 {{-- ======== ПАРОЛЬ ======== --}}
                 <div>
-                    <label class="block mb-1 font-medium">Пароль</label>
+                    <label class="block mb-1 font-medium">Придумайте пароль:</label>
                     <input type="password" name="password" required
                         class="w-full p-3 border border-gray-300 rounded-sm focus:border-black outline-none transition">
                     @error('password')
@@ -42,7 +42,7 @@
 
                 {{-- ======== ПОДТВЕРЖДЕНИЕ ПАРОЛЯ ======== --}}
                 <div>
-                    <label class="block mb-1 font-medium">Повторите пароль</label>
+                    <label class="block mb-1 font-medium">Повторите пароль:</label>
                     <input type="password" name="password_confirmation" required
                         class="w-full p-3 border border-gray-300 rounded-sm focus:border-black outline-none transition">
                 </div>
