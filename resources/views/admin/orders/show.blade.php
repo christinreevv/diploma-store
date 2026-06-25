@@ -2,6 +2,13 @@
 
 @section('title', 'Заказ #' . $order->id)
 
+@php
+    use App\Models\Order;
+
+    $allOrderIds = Order::orderBy('created_at')->pluck('id');
+    $orderNumber = $allOrderIds->search($order->id) + 1;
+@endphp
+
 @section('content')
 
     <div class="container mx-auto py-10 space-y-10">
@@ -10,9 +17,7 @@
         <div class="flex items-start justify-between">
             <div>
                 <h1 class="text-3xl font-light text-gray-900">
-                    <h1 class="text-3xl font-light text-gray-900">
-                        Заказ #{{ request('number', $order->id) }}
-                    </h1>
+                    Заказ #{{ $orderNumber }}
                 </h1>
 
                 <p class="text-gray-500 mt-1">

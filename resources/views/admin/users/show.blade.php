@@ -68,7 +68,9 @@
     {{-- ЗАКАЗЫ --}}
     <div class="container mx-auto p-6 mt-12">
 
-        <h2 class="text-2xl font-semibold mb-6">Заказы пользователя</h2>
+        <h1 class="text-3xl font-light text-gray-700">
+            Заказы пользователя
+        </h1>
 
         @if ($sortedOrders->count())
 
@@ -97,8 +99,11 @@
                                 ₽
                             </p>
 
-                            <a href="{{ route('admin.orders.show', $order) }}"
-                                class="text-sm text-gray-500 hover:text-black">
+                            <a
+                                href="{{ route('admin.orders.show', [
+                                    'order' => $order->id,
+                                    'number' => $orderNumber,
+                                ]) }}">
                                 Просмотр
                             </a>
                         </div>
