@@ -1,12 +1,20 @@
 @extends('layouts.admin')
 
+@php
+    $userOrders = $order->user
+        ? $order->user->orders()->orderBy('created_at')->pluck('id')->values()
+        : collect();
+
+    $orderNumber = $userOrders->search($order->id) + 1;
+@endphp
+
 @section('content')
     <div class="container mx-auto max-w-md py-16">
 
         <div class="bg-white border rounded-sm p-8">
 
             <h1 class="text-xl font-medium mb-6">
-                Оплата заказа #{{ $order->id }}
+               Оплата заказа #{{ $orderNumber }}
             </h1>
 
             <div class="mb-6">
