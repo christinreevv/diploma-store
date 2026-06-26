@@ -156,7 +156,7 @@ Route::prefix('admin')
             ->name('orders.index');
 
 Route::patch('/orders/{order}/status', [OrderController::class, 'status'])
-    ->name('admin.orders.status');
+    ->name('orders.status');
 
         Route::get('/orders/{order}', [OrderController::class, 'showAdmin'])
             ->name('orders.show');
