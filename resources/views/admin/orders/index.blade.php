@@ -30,14 +30,28 @@
                     $total = $order->items->sum(fn($i) => $i->price * $i->quantity);
                 @endphp
 
+                @php
+                    $total = $order->items->sum(fn($i) => $i->price * $i->quantity);
+
+                    $orderNumber = $order->user
+                        ? $order->user->orders()->where('created_at', '<=', $order->created_at)->count()
+                        : 1;
+                @endphp
+
                 <div class="border border-gray-200 bg-white hover:border-gray-300 transition">
 
                     {{-- TOP --}}
                     <div class="p-5 flex items-start justify-between">
 
+                        @php
+                            $orderNumber = $order->user
+                                ? $order->user->orders()->where('created_at', '<=', $order->created_at)->count()
+                                : $order->id;
+                        @endphp
+
                         <div>
                             <p class="text-xs uppercase tracking-wider text-gray-400">
-                                Заказ #{{ $loop->iteration }}
+                                Заказ #{{ $orderNumber }}
                             </p>
 
                             <p class="text-sm text-gray-500 mt-1">
@@ -92,7 +106,7 @@
                         </a>
 
                         <span class="text-xs text-gray-400">
-                            № {{ $loop->iteration }}
+                            № {{ $orderNumber }}
                         </span>
 
                     </div>
