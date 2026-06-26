@@ -25,22 +25,11 @@
         {{-- GRID --}}
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
 
-            @foreach ($orders as $order)
+            @foreach ($orders as $index => $order)
                 @php
+                    $orderNumber = ($orders->firstItem() ?? 0) + $index;
+
                     $total = $order->items->sum(fn($i) => $i->price * $i->quantity);
-
-                    if ($order->user) {
-                        // Берём ВСЕ заказы пользователя, сортируем от старого к новому
-                        $userOrders = $order->user->orders->sortBy('created_at')->values();
-
-                        // Находим позицию текущего заказа в этой коллекции
-                        $orderNumber = $userOrders->search(fn($userOrder) => $userOrder->id === $order->id);
-
-                        // Делаем человеческий номер
-                        $orderNumber = $orderNumber !== false ? $orderNumber + 1 : 1;
-                    } else {
-                        $orderNumber = 1;
-                    }
                 @endphp
 
                 <div class="border border-gray-200 bg-white hover:border-gray-300 transition">
@@ -129,71 +118,90 @@
 
     {{-- AJAX STATUS TOGGLE --}}
     <script>
-      document.querySelectorAll('.js-toggle-status').forEach(btn => {
+        document.querySelectorAll('.js-toggle-status').forEach(btn => {
 
-    const statuses = [
-        { key: 'Новый', label: 'Новый', color: 'bg-gray-400' },
-        { key: 'В обработке', label: 'В обработке', color: 'bg-yellow-400' },
-        { key: 'Отправлен', label: 'Отправлен', color: 'bg-blue-500' },
-        { key: 'Доставлен', label: 'Доставлен', color: 'bg-green-500' },
-        { key: 'Отменён', label: 'Отменён', color: 'bg-red-500' },
-    ];
-
-    const dot = btn.querySelector('.status-dot');
-    const text = btn.querySelector('.status-text');
-
-    function render(status) {
-        const current = statuses.find(s => s.key === status);
-        if (!current) return;
-
-        dot.className = `w-2 h-2 rounded-full ${current.color}`;
-        text.textContent = current.label;
-    }
-
-    // первичный рендер
-    render(btn.dataset.status);
-
-    btn.addEventListener('click', async function () {
-
-        const currentIndex = statuses.findIndex(s => s.key === btn.dataset.status);
-        const nextIndex = (currentIndex + 1) % statuses.length;
-        const nextStatus = statuses[nextIndex].key;
-
-        // 🔥 1. СРАЗУ меняем UI (optimistic update)
-        btn.dataset.status = nextStatus;
-        render(nextStatus);
-
-        try {
-            const res = await fetch(btn.dataset.url, {
-                method: 'PATCH',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
+            const statuses = [{
+                    key: 'Новый',
+                    label: 'Новый',
+                    color: 'bg-gray-400'
                 },
-                body: JSON.stringify({
-                    status: nextStatus
-                })
+                {
+                    key: 'В обработке',
+                    label: 'В обработке',
+                    color: 'bg-yellow-400'
+                },
+                {
+                    key: 'Отправлен',
+                    label: 'Отправлен',
+                    color: 'bg-blue-500'
+                },
+                {
+                    key: 'Доставлен',
+                    label: 'Доставлен',
+                    color: 'bg-green-500'
+                },
+                {
+                    key: 'Отменён',
+                    label: 'Отменён',
+                    color: 'bg-red-500'
+                },
+            ];
+
+            const dot = btn.querySelector('.status-dot');
+            const text = btn.querySelector('.status-text');
+
+            function render(status) {
+                const current = statuses.find(s => s.key === status);
+                if (!current) return;
+
+                dot.className = `w-2 h-2 rounded-full ${current.color}`;
+                text.textContent = current.label;
+            }
+
+            // первичный рендер
+            render(btn.dataset.status);
+
+            btn.addEventListener('click', async function() {
+
+                const currentIndex = statuses.findIndex(s => s.key === btn.dataset.status);
+                const nextIndex = (currentIndex + 1) % statuses.length;
+                const nextStatus = statuses[nextIndex].key;
+
+                // 🔥 1. СРАЗУ меняем UI (optimistic update)
+                btn.dataset.status = nextStatus;
+                render(nextStatus);
+
+                try {
+                    const res = await fetch(btn.dataset.url, {
+                        method: 'PATCH',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify({
+                            status: nextStatus
+                        })
+                    });
+
+                    if (!res.ok) throw new Error();
+
+                    const data = await res.json();
+
+                    // 🔄 синхронизация с сервером (на всякий случай)
+                    btn.dataset.status = data.status;
+                    render(data.status);
+
+                } catch (e) {
+                    // ❌ откат если ошибка
+                    const rollbackIndex = statuses.findIndex(s => s.key === btn.dataset.status);
+                    const rollbackStatus = statuses[rollbackIndex] || statuses[0];
+
+                    btn.dataset.status = rollbackStatus.key;
+                    render(rollbackStatus.key);
+                }
             });
 
-            if (!res.ok) throw new Error();
-
-            const data = await res.json();
-
-            // 🔄 синхронизация с сервером (на всякий случай)
-            btn.dataset.status = data.status;
-            render(data.status);
-
-        } catch (e) {
-            // ❌ откат если ошибка
-            const rollbackIndex = statuses.findIndex(s => s.key === btn.dataset.status);
-            const rollbackStatus = statuses[rollbackIndex] || statuses[0];
-
-            btn.dataset.status = rollbackStatus.key;
-            render(rollbackStatus.key);
-        }
-    });
-
-});
+        });
     </script>
 @endsection
