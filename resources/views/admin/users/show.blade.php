@@ -62,7 +62,7 @@
     {{-- ЗАКАЗЫ --}}
     <div class="container mx-auto p-6 mt-12">
 
-        <h1 class="text-3xl font-light text-gray-700">
+        <h1 class="text-3xl font-light text-gray-700 mb-5">
             Заказы пользователя
         </h1>
 
