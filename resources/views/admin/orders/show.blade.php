@@ -20,9 +20,6 @@
             <div class="bg-white shadow rounded-lg p-4 flex justify-between items-center">
 
                 <div>
-                    <p class="font-medium">
-                        Заказ #{{ $orderNumber }}
-                    </p>
 
                     <p class="text-sm text-gray-500">
                         {{ $userOrder->created_at->format('d.m.Y H:i') }}
