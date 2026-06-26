@@ -26,31 +26,27 @@
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
 
             @foreach ($orders as $order)
-               @php
-    $total = $order->items->sum(fn($i) => $i->price * $i->quantity);
+                @php
+                    $total = $order->items->sum(fn($i) => $i->price * $i->quantity);
 
-    if ($order->user) {
-        $userOrderIds = $order->user->orders()
-            ->orderBy('created_at', 'asc')
-            ->pluck('id')
-            ->values();
+                    if ($order->user) {
+                        // Берём ВСЕ заказы пользователя, сортируем от старого к новому
+                        $userOrders = $order->user->orders->sortBy('created_at')->values();
 
-        $orderNumber = $userOrderIds->search($order->id) + 1;
-    } else {
-        $orderNumber = 1;
-    }
-@endphp
+                        // Находим позицию текущего заказа в этой коллекции
+                        $orderNumber = $userOrders->search(fn($userOrder) => $userOrder->id === $order->id);
+
+                        // Делаем человеческий номер
+                        $orderNumber = $orderNumber !== false ? $orderNumber + 1 : 1;
+                    } else {
+                        $orderNumber = 1;
+                    }
+                @endphp
 
                 <div class="border border-gray-200 bg-white hover:border-gray-300 transition">
 
                     {{-- TOP --}}
                     <div class="p-5 flex items-start justify-between">
-
-                        @php
-                            $orderNumber = $order->user
-                                ? $order->user->orders()->where('created_at', '<=', $order->created_at)->count()
-                                : $order->id;
-                        @endphp
 
                         <div>
                             <p class="text-xs uppercase tracking-wider text-gray-400">
@@ -71,14 +67,11 @@
                             data-url="{{ route('admin.orders.toggle-status', $order) }}">
 
                             <span
-                                class="status-dot w-2 h-2 rounded-full
-                            {{ $order->status === 'completed' ? 'bg-green-500' : 'bg-gray-300' }}">
-                            </span>
+                                class="status-dot w-2 h-2 rounded-full {{ $order->status === 'completed' ? 'bg-green-500' : 'bg-gray-300' }}"></span>
 
                             <span class="status-text text-gray-700">
                                 {{ $order->status }}
                             </span>
-
                         </button>
 
                     </div>
@@ -103,7 +96,7 @@
                     {{-- BOTTOM --}}
                     <div class="px-5 py-4 border-t border-gray-100 flex items-center justify-between">
 
-                        <a href="{{ route('admin.orders.show', ['order' => $order->id, 'number' => $orders->firstItem() + $loop->index]) }}"
+                        <a href="{{ route('admin.orders.show', ['order' => $order->id, 'number' => $orderNumber]) }}"
                             class="text-sm text-gray-500 hover:text-black transition">
                             Открыть
                         </a>
