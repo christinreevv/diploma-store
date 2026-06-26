@@ -129,74 +129,71 @@
 
     {{-- AJAX STATUS TOGGLE --}}
     <script>
-        document.querySelectorAll('.js-toggle-status').forEach(btn => {
+      document.querySelectorAll('.js-toggle-status').forEach(btn => {
 
-            const statuses = [{
-                    key: 'Новый',
-                    label: 'Новый',
-                    color: 'bg-gray-400'
+    const statuses = [
+        { key: 'Новый', label: 'Новый', color: 'bg-gray-400' },
+        { key: 'В обработке', label: 'В обработке', color: 'bg-yellow-400' },
+        { key: 'Отправлен', label: 'Отправлен', color: 'bg-blue-500' },
+        { key: 'Доставлен', label: 'Доставлен', color: 'bg-green-500' },
+        { key: 'Отменён', label: 'Отменён', color: 'bg-red-500' },
+    ];
+
+    const dot = btn.querySelector('.status-dot');
+    const text = btn.querySelector('.status-text');
+
+    function render(status) {
+        const current = statuses.find(s => s.key === status);
+        if (!current) return;
+
+        dot.className = `w-2 h-2 rounded-full ${current.color}`;
+        text.textContent = current.label;
+    }
+
+    // первичный рендер
+    render(btn.dataset.status);
+
+    btn.addEventListener('click', async function () {
+
+        const currentIndex = statuses.findIndex(s => s.key === btn.dataset.status);
+        const nextIndex = (currentIndex + 1) % statuses.length;
+        const nextStatus = statuses[nextIndex].key;
+
+        // 🔥 1. СРАЗУ меняем UI (optimistic update)
+        btn.dataset.status = nextStatus;
+        render(nextStatus);
+
+        try {
+            const res = await fetch(btn.dataset.url, {
+                method: 'PATCH',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
                 },
-                {
-                    key: 'В обработке',
-                    label: 'В обработке',
-                    color: 'bg-yellow-400'
-                },
-                {
-                    key: 'Отправлен',
-                    label: 'Отправлен',
-                    color: 'bg-blue-500'
-                },
-                {
-                    key: 'Доставлен',
-                    label: 'Доставлен',
-                    color: 'bg-green-500'
-                },
-                {
-                    key: 'Отменён',
-                    label: 'Отменён',
-                    color: 'bg-red-500'
-                },
-            ];
-
-            function render(status) {
-                const dot = btn.querySelector('.status-dot');
-                const text = btn.querySelector('.status-text');
-
-                const current = statuses.find(s => s.key === status) || statuses[0];
-
-                dot.className = `w-2 h-2 rounded-full ${current.color}`;
-                text.textContent = current.label;
-            }
-
-            render(btn.dataset.status);
-
-            btn.addEventListener('click', async function() {
-
-                let currentIndex = statuses.findIndex(s => s.key === btn.dataset.status);
-                let nextIndex = (currentIndex + 1) % statuses.length;
-                let nextStatus = statuses[nextIndex].key;
-
-                const res = await fetch(btn.dataset.url, {
-                    method: 'PATCH',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                    body: JSON.stringify({
-                        status: nextStatus
-                    })
-                });
-
-                if (!res.ok) return;
-
-                const data = await res.json();
-
-                btn.dataset.status = data.status;
-
-                render(data.status);
+                body: JSON.stringify({
+                    status: nextStatus
+                })
             });
 
-        });
+            if (!res.ok) throw new Error();
+
+            const data = await res.json();
+
+            // 🔄 синхронизация с сервером (на всякий случай)
+            btn.dataset.status = data.status;
+            render(data.status);
+
+        } catch (e) {
+            // ❌ откат если ошибка
+            const rollbackIndex = statuses.findIndex(s => s.key === btn.dataset.status);
+            const rollbackStatus = statuses[rollbackIndex] || statuses[0];
+
+            btn.dataset.status = rollbackStatus.key;
+            render(rollbackStatus.key);
+        }
+    });
+
+});
     </script>
 @endsection
