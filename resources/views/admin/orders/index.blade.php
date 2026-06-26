@@ -75,16 +75,17 @@
         @endswitch">
                             </span>
 
-                            <select class="js-order-status border border-gray-200 rounded px-2 py-1 text-sm"
-                                data-url="{{ route('admin.orders.status', $order) }}">
+                           <select
+    class="js-order-status min-w-[170px] appearance-none rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm font-medium text-gray-800 shadow-sm transition-all duration-200 hover:border-gray-300 hover:bg-white focus:border-black focus:bg-white focus:outline-none focus:ring-4 focus:ring-gray-100"
+    data-url="{{ route('admin.orders.status', $order) }}">
 
-                                @foreach (['Новый', 'В обработке', 'Отправлен', 'Доставлен', 'Отменён'] as $status)
-                                    <option value="{{ $status }}" {{ $order->status === $status ? 'selected' : '' }}>
-                                        {{ $status }}
-                                    </option>
-                                @endforeach
+    @foreach (['Новый', 'В обработке', 'Отправлен', 'Доставлен', 'Отменён'] as $status)
+        <option value="{{ $status }}" {{ $order->status === $status ? 'selected' : '' }}>
+            {{ $status }}
+        </option>
+    @endforeach
 
-                            </select>
+</select>
                         </div>
                     </div>
 
@@ -132,62 +133,62 @@
     </div>
 
     {{-- AJAX STATUS TOGGLE --}}
-<script>
-document.addEventListener('DOMContentLoaded', () => {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
 
-    document.querySelectorAll('.js-order-status').forEach(select => {
+            document.querySelectorAll('.js-order-status').forEach(select => {
 
-        select.addEventListener('change', async function () {
+                select.addEventListener('change', async function() {
 
-            const res = await fetch(this.dataset.url, {
-                method: 'PATCH',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({
-                    status: this.value
-                })
+                    const res = await fetch(this.dataset.url, {
+                        method: 'PATCH',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            status: this.value
+                        })
+                    });
+
+                    if (!res.ok) {
+                        alert('Ошибка');
+                        return;
+                    }
+
+                    const data = await res.json();
+
+                    const dot = this.parentElement.querySelector('.status-dot');
+
+                    dot.className = 'status-dot w-2 h-2 rounded-full';
+
+                    switch (data.status) {
+                        case 'Новый':
+                            dot.classList.add('bg-gray-400');
+                            break;
+
+                        case 'В обработке':
+                            dot.classList.add('bg-yellow-400');
+                            break;
+
+                        case 'Отправлен':
+                            dot.classList.add('bg-blue-500');
+                            break;
+
+                        case 'Доставлен':
+                            dot.classList.add('bg-green-500');
+                            break;
+
+                        case 'Отменён':
+                            dot.classList.add('bg-red-500');
+                            break;
+                    }
+
+                });
+
             });
 
-            if (!res.ok) {
-                alert('Ошибка');
-                return;
-            }
-
-            const data = await res.json();
-
-            const dot = this.parentElement.querySelector('.status-dot');
-
-            dot.className = 'status-dot w-2 h-2 rounded-full';
-
-            switch (data.status) {
-                case 'Новый':
-                    dot.classList.add('bg-gray-400');
-                    break;
-
-                case 'В обработке':
-                    dot.classList.add('bg-yellow-400');
-                    break;
-
-                case 'Отправлен':
-                    dot.classList.add('bg-blue-500');
-                    break;
-
-                case 'Доставлен':
-                    dot.classList.add('bg-green-500');
-                    break;
-
-                case 'Отменён':
-                    dot.classList.add('bg-red-500');
-                    break;
-            }
-
         });
-
-    });
-
-});
-</script>
+    </script>
 @endsection

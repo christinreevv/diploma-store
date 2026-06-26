@@ -145,20 +145,20 @@ class OrderController extends Controller
         return view('admin.orders.index', compact('orders'));
     }
 
-public function status(Request $request, Order $order)
-{
-    $request->validate([
-        'status' => 'required|in:Новый,В обработке,Отправлен,Доставлен,Отменён',
-    ]);
+    public function status(Request $request, Order $order)
+    {
+        $request->validate([
+            'status' => 'required|in:Новый,В обработке,Отправлен,Доставлен,Отменён',
+        ]);
 
-    $order->update([
-        'status' => $request->status,
-    ]);
+        $order->update([
+            'status' => $request->status,
+        ]);
 
-    return response()->json([
-        'status' => $order->status,
-    ]);
-}
+        return response()->json([
+            'status' => $order->status,
+        ]);
+    }
 
     public function showAdmin(Order $order)
     {
