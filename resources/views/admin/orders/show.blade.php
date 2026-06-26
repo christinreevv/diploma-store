@@ -6,44 +6,46 @@
 
     <div class="container mx-auto py-10 space-y-10">
 
-@php
-    $userOrders = $order->user?->orders?->sortBy('created_at')->values();
-@endphp
+        @php
+            $userOrders = $order->user ? $order->user->orders()->orderBy('created_at')->get() : collect();
 
-   @foreach ($userOrders ?? [] as $index => $userOrder)
-    @php
-        $orderNumber = $index + 1;
-    @endphp
+            $orderNumber = $userOrders->search(fn($o) => $o->id === $order->id) + 1;
+        @endphp
 
-    <div class="bg-white shadow rounded-lg p-4 flex justify-between items-center">
+        @foreach ($userOrders ?? [] as $index => $userOrder)
+            @php
+                $orderNumber = $index + 1;
+            @endphp
 
-        <div>
-            <p class="font-medium">
-                Заказ #{{ $orderNumber }}
-            </p>
+            <div class="bg-white shadow rounded-lg p-4 flex justify-between items-center">
 
-            <p class="text-sm text-gray-500">
-                {{ $userOrder->created_at->format('d.m.Y H:i') }}
-            </p>
+                <div>
+                    <p class="font-medium">
+                        Заказ #{{ $orderNumber }}
+                    </p>
 
-            <p class="text-sm text-gray-500">
-                Статус: {{ $userOrder->status }}
-            </p>
-        </div>
+                    <p class="text-sm text-gray-500">
+                        {{ $userOrder->created_at->format('d.m.Y H:i') }}
+                    </p>
 
-        <div class="text-right">
-            <p class="font-medium text-lg">
-                {{ number_format($userOrder->items->sum(fn($item) => $item->price * $item->quantity), 0, ',', ' ') }}
-                ₽
-            </p>
+                    <p class="text-sm text-gray-500">
+                        Статус: {{ $userOrder->status }}
+                    </p>
+                </div>
 
-            <a href="{{ route('admin.orders.show', $userOrder) }}" class="text-sm text-gray-500 hover:text-black">
-                Просмотр
-            </a>
-        </div>
+                <div class="text-right">
+                    <p class="font-medium text-lg">
+                        {{ number_format($userOrder->items->sum(fn($item) => $item->price * $item->quantity), 0, ',', ' ') }}
+                        ₽
+                    </p>
 
-    </div>
-@endforeach
+                    <a href="{{ route('admin.orders.show', $userOrder) }}" class="text-sm text-gray-500 hover:text-black">
+                        Просмотр
+                    </a>
+                </div>
+
+            </div>
+        @endforeach
         {{-- INFO --}}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
