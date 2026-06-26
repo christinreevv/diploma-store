@@ -1,13 +1,7 @@
 @extends('layouts.admin')
 
 @php
-    use App\Models\Order;
-
-    // Заказы пользователя (уже отсортированные)
-    $sortedOrders = $user->orders->sortByDesc('created_at')->values();
-
-    // Все заказы системы в правильном порядке (для глобального номера)
-    $allOrderIds = Order::orderBy('created_at')->pluck('id')->values();
+    $sortedOrders = $user->orders->sortBy('created_at')->values();
 @endphp
 
 @section('title', $user->name)
@@ -76,42 +70,41 @@
 
             <div class="space-y-4">
 
-              @foreach ($sortedOrders as $order)
+                @foreach ($sortedOrders as $index => $order)
+                    @php
+                        $orderNumber = $index + 1;
+                    @endphp
 
-    @php
-        $orderNumber = $allOrderIds->search($order->id) + 1;
-    @endphp
+                    <div class="bg-white shadow rounded-lg p-4 flex justify-between items-center">
 
-    <div class="bg-white shadow rounded-lg p-4 flex justify-between items-center">
+                        <div>
+                            <p class="font-medium">
+                                Заказ #{{ $orderNumber }}
+                            </p>
 
-        <div>
-            <p class="font-medium">
-                Заказ #{{ $orderNumber }}
-            </p>
+                            <p class="text-sm text-gray-500">
+                                {{ $order->created_at->format('d.m.Y H:i') }}
+                            </p>
 
-            <p class="text-sm text-gray-500">
-                {{ $order->created_at->format('d.m.Y H:i') }}
-            </p>
+                            <p class="text-sm text-gray-500">
+                                Статус: {{ $order->status }}
+                            </p>
+                        </div>
 
-            <p class="text-sm text-gray-500">
-                Статус: {{ $order->status }}
-            </p>
-        </div>
+                        <div class="text-right">
+                            <p class="font-medium text-lg">
+                                {{ number_format($order->items->sum(fn($item) => $item->price * $item->quantity), 0, ',', ' ') }}
+                                ₽
+                            </p>
 
-        <div class="text-right">
-            <p class="font-medium text-lg">
-                {{ number_format($order->items->sum(fn($item) => $item->price * $item->quantity), 0, ',', ' ') }} ₽
-            </p>
+                            <a href="{{ route('admin.orders.show', $order) }}"
+                                class="text-sm text-gray-500 hover:text-black">
+                                Просмотр
+                            </a>
+                        </div>
 
-            <a href="{{ route('admin.orders.show', $order) }}"
-               class="text-sm text-gray-500 hover:text-black">
-                Просмотр
-            </a>
-        </div>
-
-    </div>
-
-@endforeach
+                    </div>
+                @endforeach
 
             </div>
         @else
