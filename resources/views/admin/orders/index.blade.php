@@ -75,8 +75,8 @@
         @endswitch">
                             </span>
 
-                           <select
-    class="js-order-status min-w-[170px] appearance-none rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm font-medium text-gray-800 shadow-sm transition-all duration-200 hover:border-gray-300 hover:bg-white focus:border-black focus:bg-white focus:outline-none focus:ring-4 focus:ring-gray-100"
+<select
+    class="js-order-status h-10 rounded-lg border border-gray-300 bg-white px-3 pr-10 text-sm font-medium text-gray-700 shadow-sm transition focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-200 hover:border-gray-400"
     data-url="{{ route('admin.orders.status', $order) }}">
 
     @foreach (['Новый', 'В обработке', 'Отправлен', 'Доставлен', 'Отменён'] as $status)
