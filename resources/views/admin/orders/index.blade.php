@@ -63,30 +63,25 @@
                         </div>
 
                         {{-- STATUS --}}
-                        <div class="flex items-center gap-2">
-                            <span
-                                class="status-dot w-2 h-2 rounded-full
-        @switch($order->status)
-            @case('Новый') bg-gray-400 @break
-            @case('В обработке') bg-yellow-400 @break
-            @case('Отправлен') bg-blue-500 @break
-            @case('Доставлен') bg-green-500 @break
-            @case('Отменён') bg-red-500 @break
-        @endswitch">
-                            </span>
+                        @php
+                            $statuses = [
+                                ['key' => 'Новый', 'label' => 'Новый', 'color' => 'bg-gray-400'],
+                                ['key' => 'В обработке', 'label' => 'В обработке', 'color' => 'bg-yellow-400'],
+                                ['key' => 'Отправлен', 'label' => 'Отправлен', 'color' => 'bg-blue-500'],
+                                ['key' => 'Доставлен', 'label' => 'Доставлен', 'color' => 'bg-green-500'],
+                                ['key' => 'Отменён', 'label' => 'Отменён', 'color' => 'bg-red-500'],
+                            ];
+                        @endphp
 
-<select
-    class="js-order-status h-10 rounded-lg border border-gray-300 bg-white px-3 pr-10 text-sm font-medium text-gray-700 shadow-sm transition focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-200 hover:border-gray-400"
-    data-url="{{ route('admin.orders.status', $order) }}">
+                        <button type="button" class="flex items-center gap-2 text-xs js-toggle-status"
+                            data-id="{{ $order->id }}" data-url="{{ route('admin.orders.status', $order) }}"
+                            data-status="{{ $order->status }}">
 
-    @foreach (['Новый', 'В обработке', 'Отправлен', 'Доставлен', 'Отменён'] as $status)
-        <option value="{{ $status }}" {{ $order->status === $status ? 'selected' : '' }}>
-            {{ $status }}
-        </option>
-    @endforeach
+                            <span class="w-2 h-2 rounded-full status-dot"></span>
 
-</select>
-                        </div>
+                            <span class="status-text"></span>
+
+                        </button>
                     </div>
 
                     {{-- MIDDLE --}}
@@ -134,59 +129,72 @@
 
     {{-- AJAX STATUS TOGGLE --}}
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.js-toggle-status').forEach(btn => {
 
-            document.querySelectorAll('.js-order-status').forEach(select => {
+            const statuses = [{
+                    key: 'Новый',
+                    label: 'Новый',
+                    color: 'bg-gray-400'
+                },
+                {
+                    key: 'В обработке',
+                    label: 'В обработке',
+                    color: 'bg-yellow-400'
+                },
+                {
+                    key: 'Отправлен',
+                    label: 'Отправлен',
+                    color: 'bg-blue-500'
+                },
+                {
+                    key: 'Доставлен',
+                    label: 'Доставлен',
+                    color: 'bg-green-500'
+                },
+                {
+                    key: 'Отменён',
+                    label: 'Отменён',
+                    color: 'bg-red-500'
+                },
+            ];
 
-                select.addEventListener('change', async function() {
+            function render(status) {
+                const dot = btn.querySelector('.status-dot');
+                const text = btn.querySelector('.status-text');
 
-                    const res = await fetch(this.dataset.url, {
-                        method: 'PATCH',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            status: this.value
-                        })
-                    });
+                const current = statuses.find(s => s.key === status) || statuses[0];
 
-                    if (!res.ok) {
-                        alert('Ошибка');
-                        return;
-                    }
+                dot.className = `w-2 h-2 rounded-full ${current.color}`;
+                text.textContent = current.label;
+            }
 
-                    const data = await res.json();
+            render(btn.dataset.status);
 
-                    const dot = this.parentElement.querySelector('.status-dot');
+            btn.addEventListener('click', async function() {
 
-                    dot.className = 'status-dot w-2 h-2 rounded-full';
+                let currentIndex = statuses.findIndex(s => s.key === btn.dataset.status);
+                let nextIndex = (currentIndex + 1) % statuses.length;
+                let nextStatus = statuses[nextIndex].key;
 
-                    switch (data.status) {
-                        case 'Новый':
-                            dot.classList.add('bg-gray-400');
-                            break;
-
-                        case 'В обработке':
-                            dot.classList.add('bg-yellow-400');
-                            break;
-
-                        case 'Отправлен':
-                            dot.classList.add('bg-blue-500');
-                            break;
-
-                        case 'Доставлен':
-                            dot.classList.add('bg-green-500');
-                            break;
-
-                        case 'Отменён':
-                            dot.classList.add('bg-red-500');
-                            break;
-                    }
-
+                const res = await fetch(btn.dataset.url, {
+                    method: 'PATCH',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({
+                        status: nextStatus
+                    })
                 });
 
+                if (!res.ok) return;
+
+                const data = await res.json();
+
+                btn.dataset.status = data.status;
+
+                render(data.status);
             });
 
         });
