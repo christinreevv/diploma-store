@@ -63,42 +63,29 @@
                         </div>
 
                         {{-- STATUS --}}
-                    <div class="flex items-center gap-2">
-    <span class="status-dot w-2 h-2 rounded-full
+                        <div class="flex items-center gap-2">
+                            <span
+                                class="status-dot w-2 h-2 rounded-full
         @switch($order->status)
-            @case('new') bg-gray-400 @break
-            @case('processing') bg-yellow-400 @break
-            @case('shipped') bg-blue-500 @break
-            @case('completed') bg-green-500 @break
-            @case('cancelled') bg-red-500 @break
+            @case('Новый') bg-gray-400 @break
+            @case('В обработке') bg-yellow-400 @break
+            @case('Отправлен') bg-blue-500 @break
+            @case('Доставлен') bg-green-500 @break
+            @case('Отменён') bg-red-500 @break
         @endswitch">
-    </span>
+                            </span>
 
-    <select
-        class="js-order-status border border-gray-200 rounded px-2 py-1 text-sm"
-        data-url="{{ route('admin.orders.status', $order) }}">
+                            <select class="js-order-status border border-gray-200 rounded px-2 py-1 text-sm"
+                                data-url="{{ route('admin.orders.status', $order) }}">
 
-        <option value="new" {{ $order->status == 'new' ? 'selected' : '' }}>
-            Новый
-        </option>
+                                @foreach (['Новый', 'В обработке', 'Отправлен', 'Доставлен', 'Отменён'] as $status)
+                                    <option value="{{ $status }}" {{ $order->status === $status ? 'selected' : '' }}>
+                                        {{ $status }}
+                                    </option>
+                                @endforeach
 
-        <option value="processing" {{ $order->status == 'processing' ? 'selected' : '' }}>
-            В обработке
-        </option>
-
-        <option value="shipped" {{ $order->status == 'shipped' ? 'selected' : '' }}>
-            Отправлен
-        </option>
-
-        <option value="completed" {{ $order->status == 'completed' ? 'selected' : '' }}>
-            Выполнен
-        </option>
-
-        <option value="cancelled" {{ $order->status == 'cancelled' ? 'selected' : '' }}>
-            Отменён
-        </option>
-    </select>
-</div>
+                            </select>
+                        </div>
                     </div>
 
                     {{-- MIDDLE --}}
@@ -157,8 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
                     'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
+                    'Accept': 'application/json'
                 },
                 body: JSON.stringify({
                     status: this.value
@@ -166,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (!res.ok) {
-                alert('Ошибка изменения статуса');
+                alert('Ошибка');
                 return;
             }
 
@@ -177,27 +163,31 @@ document.addEventListener('DOMContentLoaded', () => {
             dot.className = 'status-dot w-2 h-2 rounded-full';
 
             switch (data.status) {
-                case 'new':
+                case 'Новый':
                     dot.classList.add('bg-gray-400');
                     break;
-                case 'processing':
+
+                case 'В обработке':
                     dot.classList.add('bg-yellow-400');
                     break;
-                case 'shipped':
+
+                case 'Отправлен':
                     dot.classList.add('bg-blue-500');
                     break;
-                case 'completed':
+
+                case 'Доставлен':
                     dot.classList.add('bg-green-500');
                     break;
-                case 'cancelled':
+
+                case 'Отменён':
                     dot.classList.add('bg-red-500');
                     break;
             }
+
         });
 
     });
 
 });
 </script>
-
 @endsection

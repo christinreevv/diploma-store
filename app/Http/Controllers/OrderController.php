@@ -145,10 +145,10 @@ class OrderController extends Controller
         return view('admin.orders.index', compact('orders'));
     }
 
-   public function status(Request $request, Order $order)
+public function status(Request $request, Order $order)
 {
     $request->validate([
-        'status' => 'required|in:new,processing,shipped,completed,cancelled',
+        'status' => 'required|in:Новый,В обработке,Отправлен,Доставлен,Отменён',
     ]);
 
     $order->update([
