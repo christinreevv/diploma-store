@@ -1,6 +1,10 @@
 @extends('layouts.admin')
 @php
-    $orderNumber = request('number', $order->id);
+    $userOrders = $order->user
+        ? $order->user->orders()->orderBy('created_at')->pluck('id')->values()
+        : collect();
+
+    $orderNumber = $userOrders->search($order->id) + 1;
 @endphp
 @section('breadcrumbs')
     @php
