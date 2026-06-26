@@ -63,17 +63,42 @@
                         </div>
 
                         {{-- STATUS --}}
-                        <button class="js-toggle-order-status flex items-center gap-2 text-xs"
-                            data-url="{{ route('admin.orders.toggle-status', $order) }}">
+                    <div class="flex items-center gap-2">
+    <span class="status-dot w-2 h-2 rounded-full
+        @switch($order->status)
+            @case('new') bg-gray-400 @break
+            @case('processing') bg-yellow-400 @break
+            @case('shipped') bg-blue-500 @break
+            @case('completed') bg-green-500 @break
+            @case('cancelled') bg-red-500 @break
+        @endswitch">
+    </span>
 
-                            <span
-                                class="status-dot w-2 h-2 rounded-full {{ $order->status === 'completed' ? 'bg-green-500' : 'bg-gray-300' }}"></span>
+    <select
+        class="js-order-status border border-gray-200 rounded px-2 py-1 text-sm"
+        data-url="{{ route('admin.orders.status', $order) }}">
 
-                            <span class="status-text text-gray-700">
-                                {{ $order->status }}
-                            </span>
-                        </button>
+        <option value="new" {{ $order->status == 'new' ? 'selected' : '' }}>
+            Новый
+        </option>
 
+        <option value="processing" {{ $order->status == 'processing' ? 'selected' : '' }}>
+            В обработке
+        </option>
+
+        <option value="shipped" {{ $order->status == 'shipped' ? 'selected' : '' }}>
+            Отправлен
+        </option>
+
+        <option value="completed" {{ $order->status == 'completed' ? 'selected' : '' }}>
+            Выполнен
+        </option>
+
+        <option value="cancelled" {{ $order->status == 'cancelled' ? 'selected' : '' }}>
+            Отменён
+        </option>
+    </select>
+</div>
                     </div>
 
                     {{-- MIDDLE --}}
@@ -120,47 +145,59 @@
     </div>
 
     {{-- AJAX STATUS TOGGLE --}}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
+<script>
+document.addEventListener('DOMContentLoaded', () => {
 
-            document.querySelectorAll('.js-toggle-order-status').forEach(btn => {
+    document.querySelectorAll('.js-order-status').forEach(select => {
 
-                btn.addEventListener('click', async function() {
+        select.addEventListener('change', async function () {
 
-                    const res = await fetch(this.dataset.url, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            _method: 'PATCH'
-                        })
-                    });
-
-                    if (!res.ok) return;
-
-                    const data = await res.json();
-
-                    const dot = this.querySelector('.status-dot');
-                    const text = this.querySelector('.status-text');
-
-                    if (data.status === 'completed') {
-                        dot.classList.remove('bg-gray-300');
-                        dot.classList.add('bg-green-500');
-                    } else {
-                        dot.classList.remove('bg-green-500');
-                        dot.classList.add('bg-gray-300');
-                    }
-
-                    text.textContent = data.status;
-
-                });
-
+            const res = await fetch(this.dataset.url, {
+                method: 'PATCH',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    status: this.value
+                })
             });
 
+            if (!res.ok) {
+                alert('Ошибка изменения статуса');
+                return;
+            }
+
+            const data = await res.json();
+
+            const dot = this.parentElement.querySelector('.status-dot');
+
+            dot.className = 'status-dot w-2 h-2 rounded-full';
+
+            switch (data.status) {
+                case 'new':
+                    dot.classList.add('bg-gray-400');
+                    break;
+                case 'processing':
+                    dot.classList.add('bg-yellow-400');
+                    break;
+                case 'shipped':
+                    dot.classList.add('bg-blue-500');
+                    break;
+                case 'completed':
+                    dot.classList.add('bg-green-500');
+                    break;
+                case 'cancelled':
+                    dot.classList.add('bg-red-500');
+                    break;
+            }
         });
-    </script>
+
+    });
+
+});
+</script>
 
 @endsection

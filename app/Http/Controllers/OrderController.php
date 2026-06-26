@@ -145,13 +145,15 @@ class OrderController extends Controller
         return view('admin.orders.index', compact('orders'));
     }
 
-    public function toggleStatus(Order $order)
+   public function status(Request $request, Order $order)
 {
-    $order->status = $order->status === 'completed'
-        ? 'pending'
-        : 'completed';
+    $request->validate([
+        'status' => 'required|in:new,processing,shipped,completed,cancelled',
+    ]);
 
-    $order->save();
+    $order->update([
+        'status' => $request->status,
+    ]);
 
     return response()->json([
         'status' => $order->status,

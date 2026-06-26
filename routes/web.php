@@ -46,7 +46,7 @@ Route::view('/delivery', 'footer.delivery.index')
 
 Route::view('/payment', 'footer.payment.index')
     ->name('payment');
-    
+
 Route::view('/privacy', 'footer.privacy.index')
     ->name('privacy');
 // ---------------------- защищённые маршруты ----------------------
@@ -155,8 +155,8 @@ Route::prefix('admin')
         Route::get('/orders', [OrderController::class, 'index'])
             ->name('orders.index');
 
-        Route::patch('/orders/{order}/toggle-status', [OrderController::class, 'toggleStatus'])
-            ->name('orders.toggle-status');
+Route::patch('/orders/{order}/status', [OrderController::class, 'status'])
+    ->name('admin.orders.status');
 
         Route::get('/orders/{order}', [OrderController::class, 'showAdmin'])
             ->name('orders.show');
