@@ -26,17 +26,20 @@
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
 
             @foreach ($orders as $order)
-                @php
-                    $total = $order->items->sum(fn($i) => $i->price * $i->quantity);
-                @endphp
+               @php
+    $total = $order->items->sum(fn($i) => $i->price * $i->quantity);
 
-                @php
-                    $total = $order->items->sum(fn($i) => $i->price * $i->quantity);
+    if ($order->user) {
+        $userOrderIds = $order->user->orders()
+            ->orderBy('created_at', 'asc')
+            ->pluck('id')
+            ->values();
 
-                    $orderNumber = $order->user
-                        ? $order->user->orders()->where('created_at', '<=', $order->created_at)->count()
-                        : 1;
-                @endphp
+        $orderNumber = $userOrderIds->search($order->id) + 1;
+    } else {
+        $orderNumber = 1;
+    }
+@endphp
 
                 <div class="border border-gray-200 bg-white hover:border-gray-300 transition">
 
